@@ -57,6 +57,9 @@ jobs:
             - run: 
                 name: Deploy bundle to S3
                 command: aws s3 sync build/ s3://todo.maingot.us/${CIRCLE_BRANCH} --acl public-read
+            - run:
+                name: Purge cache for environment bundle
+                command: aws cloudfront create-invalidation --distribution-id $CDN_DISTRIBUTION_ID --paths "/${CIRCLE_BRANCH}/*"
 
     deploy-prod:
         working_directory: ~/todo
@@ -75,6 +78,9 @@ jobs:
             - run: 
                 name: Deploy index.html
                 command: aws s3 sync public/ s3://todo.maingot.us --acl public-read
+            - run:
+                name: Purge cache for everything
+                command: aws cloudfront create-invalidation --distribution-id $CDN_DISTRIBUTION_ID --paths "/*"
 
 workflows:
     version: 2
