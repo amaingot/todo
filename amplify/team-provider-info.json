@@ -9,6 +9,11 @@
             "UnauthRoleName": "todo-20190119163157-unauthRole",
             "StackName": "todo-20190119163157",
             "StackId": "arn:aws:cloudformation:us-east-1:140978229662:stack/todo-20190119163157/08ce75e0-1c3a-11e9-86b6-12d48e821f84"
+        },
+        "categories": {
+            "auth": {
+                "todoAuth": {}
+            }
         }
     }
 }

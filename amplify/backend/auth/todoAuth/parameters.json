@@ -1,0 +1,100 @@
+{
+    "identityPoolName": "todoIdentityPool",
+    "allowUnauthenticatedIdentities": false,
+    "thirdPartyAuth": false,
+    "lambdaLogPolicy": "todoAuth_lambda_log_policy",
+    "openIdLambdaRoleName": "todoAuth_openid_lambda_role",
+    "openIdRolePolicy": "todoAuth_openid_pass_role_policy",
+    "openIdLambdaIAMPolicy": "todoAuth_openid_lambda_iam_policy",
+    "openIdLogPolicy": "todoAuth_openid_lambda_log_policy",
+    "userPoolName": "todoUserPool",
+    "autoVerifiedAttributes": [
+        "email"
+    ],
+    "mfaConfiguration": "OPTIONAL",
+    "mfaTypes": [
+        "SMS Text Message",
+        "TOTP"
+    ],
+    "roleName": "todoAuth_sns-role",
+    "roleExternalId": "todoAuth_role_external_id",
+    "policyName": "todoAuth-sns-policy",
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
+    "defaultPasswordPolicy": true,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [],
+    "requiredAttributes": [
+        "email"
+    ],
+    "userpoolClientName": "todoAuth_app_client",
+    "userpoolClientGenerateSecret": true,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientReadAttributes": [
+        "address",
+        "birthdate",
+        "email",
+        "family_name",
+        "given_name",
+        "locale",
+        "middle_name",
+        "name",
+        "nickname",
+        "phone_number",
+        "preferred_username",
+        "picture",
+        "profile",
+        "updated_at",
+        "website",
+        "email_verified",
+        "phone_number_verified"
+    ],
+    "mfaLambdaRole": "todoAuth_totp_lambda_role",
+    "mfaLambdaLogPolicy": "todoAuth_totp_lambda_log_policy",
+    "mfaPassRolePolicy": "todoAuth_totp_pass_role_policy",
+    "mfaLambdaIAMPolicy": "todoAuth_totp_lambda_iam_policy",
+    "userpoolClientLambdaRole": "todoAuth_userpoolclient_lambda_role",
+    "userpoolClientLogPolicy": "todoAuth_userpoolclient_lambda_log_policy",
+    "userpoolClientLambdaPolicy": "todoAuth_userpoolclient_lambda_iam_policy",
+    "userpoolClientSetAttributes": true,
+    "useDefault": "manual",
+    "authSelections": "identityPoolAndUserPool",
+    "resourceName": "todoAuth",
+    "userpoolClientWriteAttributes": [
+        "address",
+        "birthdate",
+        "family_name",
+        "given_name",
+        "locale",
+        "middle_name",
+        "name",
+        "nickname",
+        "phone_number",
+        "preferred_username",
+        "picture",
+        "profile",
+        "website",
+        "zoneinfo",
+        "email"
+    ],
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    },
+    "unauthRoleArn": {
+        "Fn::GetAtt": [
+            "UnauthRole",
+            "Arn"
+        ]
+    }
+}
