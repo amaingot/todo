@@ -1,0 +1,109 @@
+version: 2
+jobs:
+    build:
+        working_directory: ~/todo
+        docker:
+            - image: circleci/node:9.8.0
+        steps:
+            - checkout
+
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "package-lock.json" }}
+                    - v1-dependencies
+
+            - run: 
+                name: Installing All Packages
+                command: npm install
+
+            - run:
+                name: TypeScript Linter
+                command: mkdir reports && npm run lint:ci
+
+            - run:
+                name: Build Bundle for Distribution
+                command: npm run build
+
+            - save_cache:
+                paths:
+                    - node_modules
+                key: v1-dependencies-{{ checksum "package-lock.json" }}
+
+            - run:
+                name: Clean up workspace
+                command: rm -rf node_modules
+            
+            - store_test_results:
+                path: reports/
+            - store_artifacts:
+                path: reports/
+
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - ./
+
+    deploy-env:
+        working_directory: ~/todo
+        docker:
+            - image: circleci/python:2.7-jessie
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            - run: 
+                name: Install awscli
+                command: sudo pip install awscli
+            - run: 
+                name: Deploy bundle to S3
+                command: aws s3 sync dist/ s3://todo.maingot.us/${CIRCLE_BRANCH} --acl public-read
+
+    deploy-prod:
+        working_directory: ~/todo
+        docker:
+            - image: circleci/python:2.7-jessie
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            - run: 
+                name: Install awscli
+                command: sudo pip install awscli
+            - run: 
+                name: Deploy bundle to S3
+                command: aws s3 sync dist/ s3://todo.maingot.us/production --acl public-read
+            - run: 
+                name: Deploy index.html
+                command: aws s3 sync public/ s3://todo.maingot.us --acl public-read
+
+workflows:
+    version: 2
+    todo:
+        jobs:
+            - build:
+                context: maingot
+                filters:
+                    branches:
+                        only: /.*/
+                    tags:
+                        only: /.*/
+
+            - deploy-env:
+                context: maingot
+                requires:
+                    - build
+                filters:
+                    branches:
+                        only: /^(?!production).*$/
+                    tags:
+                        ignore: /.*/
+
+            - deploy-prod:
+                context: maingot
+                requires:
+                    - build
+                filters:
+                    branches:
+                        ignore: /.*/
+                    tags:
+                        only: /^(v\d+)\.\d+.(\d+)$/

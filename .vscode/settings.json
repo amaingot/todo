@@ -1,0 +1,10 @@
+{
+  "flow.enabled": false,
+  "editor.tabSize": 2,
+  "typescript.format.enable": true,
+  "eslint.enable": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "tslint.autoFixOnSave": true,
+  "prettier.disableLanguages": ["typescript", "typescriptreact"],
+  "tslint.configFile": "tslint.json"
+}

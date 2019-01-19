@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <title>Todo App</title>
+    <script>
+      var App = {};
+      (function() {
+        var prefix = "https://todo.maingot.us";
+        var url = document.location.href;
+        var env =
+          decodeURIComponent(
+            (url.match(/[?&]env=([^&#]+)/) || []).pop() || ""
+          ) || "production";
+        var port = (url.match(/[?&]port=([^&#]+)/) || []).pop() || "9000";
+        var path = prefix + "/" + env + "/";
+        var onDev =
+          env === "localhost" || document.location.hostname === "127.0.0.1";
+        if (onDev) {
+          path = "https://localhost:" + port + "/";
+        }
+        App.path = path;
+        App.scriptPath = App.path + "bundle.js";
+        App.onDev = onDev;
+        App.webEnv = env;
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="text/javascript">
+      // main js script
+      var mainScript = document.createElement("script");
+      mainScript.setAttribute("type", "text/javascript");
+      mainScript.setAttribute("src", App.scriptPath);
+      document.body.appendChild(mainScript);
+    </script>
+  </body>
+</html>
