@@ -1,0 +1,13 @@
+{
+    "bucketName": "todo-storage-bucket",
+    "authPolicyName": "s3_amplify_e1c1ec1c",
+    "unauthPolicyName": "s3_amplify_e1c1ec1c",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authPermissions": "rw",
+    "unauthPermissions": ""
+}
