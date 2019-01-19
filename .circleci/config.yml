@@ -56,7 +56,7 @@ jobs:
                 command: sudo pip install awscli
             - run: 
                 name: Deploy bundle to S3
-                command: aws s3 sync dist/ s3://todo.maingot.us/${CIRCLE_BRANCH} --acl public-read
+                command: aws s3 sync build/ s3://todo.maingot.us/${CIRCLE_BRANCH} --acl public-read
 
     deploy-prod:
         working_directory: ~/todo
@@ -71,7 +71,7 @@ jobs:
                 command: sudo pip install awscli
             - run: 
                 name: Deploy bundle to S3
-                command: aws s3 sync dist/ s3://todo.maingot.us/production --acl public-read
+                command: aws s3 sync build/ s3://todo.maingot.us/production --acl public-read
             - run: 
                 name: Deploy index.html
                 command: aws s3 sync public/ s3://todo.maingot.us --acl public-read
