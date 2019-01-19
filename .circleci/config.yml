@@ -3,7 +3,7 @@ jobs:
     build:
         working_directory: ~/todo
         docker:
-            - image: circleci/node:9.8.0
+            - image: circleci/node:11
         steps:
             - checkout
 

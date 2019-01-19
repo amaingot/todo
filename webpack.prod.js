@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const baseConfig = require("./webpack.config");
 
-const S3_BUCKET_URL = "https://todo.maingot.us";
+const S3_BUCKET_URL = "https://todo.maingot.us/";
 const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || "production";
 
 const ASSET_PATH = `${S3_BUCKET_URL}${CIRCLE_BRANCH}/`;
