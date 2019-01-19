@@ -6,6 +6,6 @@ module.exports = {
     rules: [{ test: /\.tsx?$/, loader: "ts-loader" }]
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"]
   }
 };
