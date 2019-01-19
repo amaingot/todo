@@ -10,5 +10,14 @@
 			"service": "S3",
 			"providerPlugin": "awscloudformation"
 		}
+	},
+	"api": {
+		"todoApi": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"securityType": "AMAZON_COGNITO_USER_POOLS"
+			}
+		}
 	}
 }

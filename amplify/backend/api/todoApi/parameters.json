@@ -1,0 +1,9 @@
+{
+    "AppSyncApiName": "todoApi",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authtodoAuth",
+            "Outputs.UserPoolId"
+        ]
+    }
+}
