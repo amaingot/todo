@@ -12,15 +12,7 @@
     "noUnusedParameters": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2015",
-    "plugins": [
-      {
-        "name": "typescript-styled-plugin",
-        "lint": {
-          "important": "error"
-        }
-      }
-    ]
+    "target": "es2015"
   },
   "exclude": ["**/node_modules/**", "**/build/**"]
 }
