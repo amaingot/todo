@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "build": "./node_modules/.bin/webpack --env.prod",
-    "fresh": "rm -rf node_modules build reports",
+    "fresh": "rm -rf node_modules build reports coverage",
     "lint:ci": "npm run lint -- --format junit --out reports/tslint.xml",
     "lint:fix": "npm run lint -- --fix",
     "lint": "./node_modules/.bin/tslint --project '.'",
+    "test:coverage:ci": "npm run test -- --coverage --no-cache --maxWorkers=6 --ci",
+    "test:coverage": "npm run test -- --coverage --no-cache --maxWorkers=6",
     "test:ci": "npm run test -- --ci --reporters=default --reporters=jest-junit",
     "test:watch": "npm run test -- --watch",
     "test": "./node_modules/.bin/jest",
@@ -57,6 +59,13 @@
     "testRegex": "/.*test.(ts|tsx|js)$",
     "setupFilesAfterEnv": [
       "<rootDir>src/setupTests.ts"
-    ]
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90
+      }
+    }
   }
 }

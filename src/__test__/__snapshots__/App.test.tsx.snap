@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`[Component] App renders snapshots 1`] = `
+exports[`[Component] App renders without error 1`] = `
 initialize {
   "0": Object {
     "attribs": Object {},
