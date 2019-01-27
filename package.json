@@ -13,7 +13,7 @@
     "test:ci": "npm run test -- --ci --reporters=default --reporters=jest-junit",
     "test:watch": "npm run test -- --watch",
     "test": "./node_modules/.bin/jest",
-    "check": "npm run test && npm run lint && npm run test:coverage",
+    "check": "npm run lint && npm run test:coverage",
     "start": "./node_modules/.bin/webpack-dev-server --env.dev --watch"
   },
   "dependencies": {
