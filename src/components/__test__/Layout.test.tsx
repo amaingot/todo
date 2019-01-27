@@ -1,13 +1,11 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
 
-import App from '../App';
+import Layout from '../Layout';
 
-describe('[Component] App', () => {
+describe('[Component] Layout', () => {
   it('renders without error', () => {
-    const wrapper = shallow(<App />);
+    const wrapper = shallow(<Layout>Boom</Layout>);
     expect(wrapper.render()).toMatchSnapshot();
   });
-
-  
 });
