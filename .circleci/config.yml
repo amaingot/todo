@@ -21,6 +21,18 @@ jobs:
                 command: mkdir reports && npm run lint:ci
 
             - run:
+                name: Running tests
+                command: npm run test:ci
+                environment:
+                    JEST_JUNIT_OUTPUT: "reports/test-results.xml"
+
+            - run:
+                name: Running test coverage
+                command: npm run coverage:ci
+                environment:
+                    JEST_JUNIT_OUTPUT: "reports/test-coverage.xml"
+
+            - run:
                 name: Build Bundle for Distribution
                 command: npm run build
 
