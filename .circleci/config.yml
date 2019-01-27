@@ -28,7 +28,7 @@ jobs:
 
             - run:
                 name: Running test coverage
-                command: npm run coverage:ci
+                command: npm run test:coverage:ci
                 environment:
                     JEST_JUNIT_OUTPUT: "reports/test-coverage.xml"
 
