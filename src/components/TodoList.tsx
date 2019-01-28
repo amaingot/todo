@@ -1,21 +1,35 @@
+import { buildSubscription } from 'aws-appsync';
 import * as React from 'react';
-import { graphql } from 'react-apollo';
+import { DataValue, graphql } from 'react-apollo';
 
 import { List, Paper } from '@material-ui/core';
 
 import { listTodos } from '../graphql/queries';
-import { ListTodosQueryData, ListTodosQueryVariables, Todo } from '../graphql/types';
+import { onCreateTodo, onDeleteTodo, onUpdateTodo } from '../graphql/subscriptions';
+import { ListTodosQueryData, ListTodosQueryVariables } from '../graphql/types';
 import TodoCard from './TodoCard';
 
 export interface TodoListProps {
-  items: Array<Todo | null>;
-  // deleteTodo: (index: number) => void;
-  // toggleTodo: (index: number) => void;
+  data?: DataValue<ListTodosQueryData, ListTodosQueryVariables>;
 }
 
 class TodoList extends React.Component<TodoListProps, {}> {
+  public componentDidMount() {
+    const { data } = this.props;
+    if (!data) {
+      return;
+    }
+    data.subscribeToMore(buildSubscription(onUpdateTodo, listTodos));
+    data.subscribeToMore(buildSubscription(onCreateTodo, listTodos));
+    data.subscribeToMore(buildSubscription(onDeleteTodo, listTodos));
+  }
+
   public render() {
-    const { items } = this.props;
+    const { data } = this.props;
+    if (!data || !data.listTodos || !data.listTodos.items) {
+      return <div />;
+    }
+    const { items } = data.listTodos;
 
     return (
       <>
@@ -35,13 +49,12 @@ class TodoList extends React.Component<TodoListProps, {}> {
 }
 
 export default graphql<{}, ListTodosQueryData, ListTodosQueryVariables, TodoListProps>(listTodos, {
+  options: {
+    fetchPolicy: 'cache-and-network',
+  },
   props: r => {
-    if (r.data && r.data.listTodos && r.data.listTodos.items && r.data.listTodos.items !== null) {
-      return {
-        items: r.data.listTodos.items || [],
-      };
-    } else {
-      return { items: [] };
-    }
+    return {
+      data: r.data,
+    };
   },
 })(TodoList);
