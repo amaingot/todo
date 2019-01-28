@@ -1,46 +1,34 @@
 import * as React from 'react';
 
-import {
-  Checkbox,
-  IconButton,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
-import DeleteOutlined from '@material-ui/icons/DeleteOutlined';
+import { ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 
-import { Todo } from '../types';
+import { Todo } from '../graphql/types';
+import TodoCheckbox from './TodoCheckbox';
+import TodoDeleteButton from './TodoDeleteButton';
 
-export interface TodoCardProps {
+export interface Props {
   divider: boolean;
   item: Todo;
-  onCheckBoxToggle: () => void;
-  onDeleteClick: () => void;
 }
 
-export default class TodoCard extends React.Component<TodoCardProps> {
-  constructor(props: TodoCardProps) {
+class TodoCard extends React.Component<Props> {
+  constructor(props: Props) {
     super(props);
   }
 
   public render() {
-    const { item, divider, onCheckBoxToggle, onDeleteClick } = this.props;
+    const { item, divider } = this.props;
 
     return (
       <ListItem divider={divider}>
-        <Checkbox
-          className="checkboxxxx"
-          onClick={onCheckBoxToggle}
-          checked={item.done}
-          disableRipple
-        />
+        <TodoCheckbox item={item} />
         <ListItemText primary={item.description} />
         <ListItemSecondaryAction>
-          <IconButton aria-label="Delete Todo" onClick={onDeleteClick}>
-            <DeleteOutlined />
-          </IconButton>
+          <TodoDeleteButton todoId={item.id} />
         </ListItemSecondaryAction>
       </ListItem>
     );
   }
 }
+
+export default TodoCard;
