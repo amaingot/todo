@@ -1,3 +1,4 @@
+
 // Human Generated
 export interface Todo {
   __typename: 'Todo';
@@ -67,7 +68,7 @@ export interface CreateTodoMutationVariables {
   input: CreateTodoInput;
 }
 
-export interface CreateTodoMutation {
+export interface CreateTodoMutationData {
   createTodo: Todo | null;
 }
 
@@ -75,7 +76,7 @@ export interface UpdateTodoMutationVariables {
   input: UpdateTodoInput;
 }
 
-export interface UpdateTodoMutation {
+export interface UpdateTodoMutationData {
   updateTodo: Todo | null;
 }
 
@@ -83,7 +84,7 @@ export interface DeleteTodoMutationVariables {
   input: DeleteTodoInput;
 }
 
-export interface DeleteTodoMutation {
+export interface DeleteTodoMutationData {
   deleteTodo: Todo | null;
 }
 
@@ -91,7 +92,7 @@ export interface GetTodoQueryVariables {
   id: string;
 }
 
-export interface GetTodoQuery {
+export interface GetTodoQueryData {
   getTodo: Todo | null;
 }
 
@@ -101,7 +102,7 @@ export interface ListTodosQueryVariables {
   nextToken?: string | null;
 }
 
-export interface ListTodosQuery {
+export interface ListTodosQueryData {
   listTodos: {
     __typename: 'ModelTodoConnection';
     items: Array<Todo | null> | null;
@@ -109,14 +110,14 @@ export interface ListTodosQuery {
   } | null;
 }
 
-export interface OnCreateTodoSubscription {
+export interface OnCreateTodoSubscriptionData {
   onCreateTodo: Todo | null;
 }
 
-export interface OnUpdateTodoSubscription {
+export interface OnUpdateTodoSubscriptionData {
   onUpdateTodo: Todo | null;
 }
 
-export interface OnDeleteTodoSubscription {
+export interface OnDeleteTodoSubscriptionData {
   onDeleteTodo: Todo | null;
 }

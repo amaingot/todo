@@ -1,36 +1,47 @@
 import * as React from 'react';
+import { graphql } from 'react-apollo';
 
 import { List, Paper } from '@material-ui/core';
 
-import { Todo } from '../types';
+import { listTodos } from '../graphql/queries';
+import { ListTodosQueryData, ListTodosQueryVariables, Todo } from '../graphql/types';
 import TodoCard from './TodoCard';
 
 export interface TodoListProps {
-  items: Todo[];
-  deleteTodo: (index: number) => void;
-  toggleTodo: (index: number) => void;
+  items: Array<Todo | null>;
+  // deleteTodo: (index: number) => void;
+  // toggleTodo: (index: number) => void;
 }
 
-const TodoList: React.SFC<TodoListProps> = props => {
-  return (
-    <>
-      {props.items.length > 0 && (
-        <Paper style={{ margin: 16 }}>
-          <List style={{ overflow: 'scroll' }}>
-            {props.items.map((todo, idx) => (
-              <TodoCard
-                item={todo}
-                key={`TodoItem.${idx}`}
-                divider={idx !== props.items.length - 1}
-                onDeleteClick={() => props.deleteTodo(idx)}
-                onCheckBoxToggle={() => props.toggleTodo(idx)}
-              />
-            ))}
-          </List>
-        </Paper>
-      )}
-    </>
-  );
-};
+class TodoList extends React.Component<TodoListProps, {}> {
+  public render() {
+    const { items } = this.props;
 
-export default TodoList;
+    return (
+      <>
+        {items.length > 0 && (
+          <Paper style={{ margin: 16 }}>
+            <List style={{ overflow: 'scroll' }}>
+              {items.map(
+                (todo, idx) =>
+                  todo && <TodoCard key={todo.id} item={todo} divider={idx !== items.length - 1} />
+              )}
+            </List>
+          </Paper>
+        )}
+      </>
+    );
+  }
+}
+
+export default graphql<{}, ListTodosQueryData, ListTodosQueryVariables, TodoListProps>(listTodos, {
+  props: r => {
+    if (r.data && r.data.listTodos && r.data.listTodos.items && r.data.listTodos.items !== null) {
+      return {
+        items: r.data.listTodos.items || [],
+      };
+    } else {
+      return { items: [] };
+    }
+  },
+})(TodoList);
