@@ -1,26 +1,16 @@
 import * as React from 'react';
-import { graphql, MutationFn } from 'react-apollo';
 
 import { Button, Grid, Paper, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
-import { createTodo } from '../graphql/mutations';
-import {
-  CreateTodoInput,
-  CreateTodoMutationData,
-  CreateTodoMutationVariables,
-} from '../graphql/types';
-
-interface RelayProps {
-  createTodo?: MutationFn<CreateTodoMutationData, CreateTodoMutationVariables>;
-}
+import withCreateTodo, { WithCreateTodoProps } from '../enhancers/withCreateTodo';
 
 export interface State {
   inputValue: string;
 }
 
-class CreateTodo extends React.Component<RelayProps, State> {
-  constructor(props: RelayProps) {
+class CreateTodo extends React.Component<WithCreateTodoProps, State> {
+  constructor(props: WithCreateTodoProps) {
     super(props);
     this.state = {
       inputValue: '',
@@ -28,7 +18,7 @@ class CreateTodo extends React.Component<RelayProps, State> {
   }
 
   public createTodo = () => {
-    const newTodo: CreateTodoInput = {
+    const newTodo = {
       description: this.state.inputValue,
       done: false,
     };
@@ -36,12 +26,7 @@ class CreateTodo extends React.Component<RelayProps, State> {
       inputValue: '',
     });
 
-    // here we would create a new todo
-    if (this.props.createTodo) {
-      this.props.createTodo({
-        variables: { input: newTodo },
-      });
-    }
+    this.props.performCreateTodo(newTodo);
   };
 
   public onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,11 +73,4 @@ class CreateTodo extends React.Component<RelayProps, State> {
   }
 }
 
-export default graphql<{}, CreateTodoMutationData, CreateTodoMutationVariables, RelayProps>(
-  createTodo,
-  {
-    props: r => ({
-      createTodo: r.mutate,
-    }),
-  }
-)(CreateTodo);
+export default withCreateTodo()(CreateTodo);
