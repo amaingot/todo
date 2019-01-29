@@ -20,7 +20,8 @@ const client = new AWSAppSyncClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
+  // This is bad. Very bad. But... AWSAppSyncClient is stupid.
+  <ApolloProvider client={client as any}>
     <Rehydrated>
       <App />
     </Rehydrated>
