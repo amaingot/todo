@@ -1,43 +1,34 @@
 import * as React from 'react';
-import { graphql } from 'react-apollo';
 
 import { Checkbox } from '@material-ui/core';
-import { updateTodo } from '../graphql/mutations';
-import { Todo, UpdateTodoMutationData, UpdateTodoMutationVariables } from '../graphql/types';
 
-interface ReactProps {
+import withUpdateTodo, { WithUpdateTodoProps } from '../enhancers/withUpdateTodo';
+import { Todo } from '../graphql/types';
+
+interface Props {
   item: Todo;
 }
 
-interface ApolloProps {
-  toggleDone?: () => void;
-}
+class TodoCheckbox extends React.Component<Props & WithUpdateTodoProps> {
+  public toggleDone = () => {
+    const { performUpdateTodo, item } = this.props;
 
-class TodoCheckbox extends React.Component<ReactProps & ApolloProps> {
+    performUpdateTodo({
+      ...item,
+      done: !item.done,
+    });
+  };
   public render() {
-    const { item, toggleDone } = this.props;
+    const { item } = this.props;
     return (
-      <Checkbox className="checkboxxxx" onClick={toggleDone} checked={item.done} disableRipple />
+      <Checkbox
+        className="checkboxxxx"
+        onClick={this.toggleDone}
+        checked={item.done}
+        disableRipple
+      />
     );
   }
 }
 
-export default graphql<
-  ReactProps,
-  UpdateTodoMutationData,
-  UpdateTodoMutationVariables,
-  ApolloProps
->(updateTodo, {
-  options: props => ({
-    variables: {
-      input: {
-        id: props.item.id,
-        description: props.item.description,
-        done: !props.item.done,
-      },
-    },
-  }),
-  props: r => {
-    return { toggleDone: r.mutate };
-  },
-})(TodoCheckbox);
+export default withUpdateTodo<Props>()(TodoCheckbox);

@@ -1,35 +1,23 @@
-import { buildSubscription } from 'aws-appsync';
 import * as React from 'react';
-import { DataValue, graphql } from 'react-apollo';
 
 import { List, Paper } from '@material-ui/core';
 
-import { listTodos } from '../graphql/queries';
-import { onCreateTodo, onDeleteTodo, onUpdateTodo } from '../graphql/subscriptions';
-import { ListTodosQueryData, ListTodosQueryVariables } from '../graphql/types';
+import withTodoList, { WithTodoListProps } from '../enhancers/withTodoList';
 import TodoCard from './TodoCard';
 
-export interface TodoListProps {
-  data?: DataValue<ListTodosQueryData, ListTodosQueryVariables>;
-}
-
-class TodoList extends React.Component<TodoListProps, {}> {
+class TodoList extends React.Component<WithTodoListProps, {}> {
   public componentDidMount() {
-    const { data } = this.props;
-    if (!data) {
-      return;
-    }
-    data.subscribeToMore(buildSubscription(onUpdateTodo, listTodos));
-    data.subscribeToMore(buildSubscription(onCreateTodo, listTodos));
-    data.subscribeToMore(buildSubscription(onDeleteTodo, listTodos));
+    this.props.subscribeToUpdateTodo();
+    this.props.subscribeToCreateTodo();
+    this.props.subscribeToDeleteTodo();
   }
 
   public render() {
-    const { data } = this.props;
-    if (!data || !data.listTodos || !data.listTodos.items) {
+    const { listTodos } = this.props;
+    if (!listTodos || !listTodos.items) {
       return <div />;
     }
-    const { items } = data.listTodos;
+    const { items } = listTodos;
 
     return (
       <>
@@ -48,13 +36,4 @@ class TodoList extends React.Component<TodoListProps, {}> {
   }
 }
 
-export default graphql<{}, ListTodosQueryData, ListTodosQueryVariables, TodoListProps>(listTodos, {
-  options: {
-    fetchPolicy: 'cache-and-network',
-  },
-  props: r => {
-    return {
-      data: r.data,
-    };
-  },
-})(TodoList);
+export default withTodoList<{}>()(TodoList);

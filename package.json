@@ -19,6 +19,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.1",
     "@material-ui/icons": "^3.0.2",
+    "apollo-client": "^2.4.12",
     "aws-amplify": "^1.1.19",
     "aws-appsync": "^1.7.1",
     "aws-appsync-react": "^1.2.6",

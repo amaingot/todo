@@ -1,6 +1,6 @@
 import Amplify from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { Rehydrated } from 'aws-appsync-react'; // this needs to also be installed when working with React
+import { Rehydrated } from 'aws-appsync-react';
 import * as React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import * as ReactDOM from 'react-dom';
@@ -20,7 +20,12 @@ const client = new AWSAppSyncClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
+  /*
+    Without "as any" you get this:
+    Type 'AWSAppSyncClient<NormalizedCacheObject>' is missing the following properties from type
+    'ApolloClient<{}>': clearStoreCallbacks, clientAwareness, stop, onClearStorets(2739).
+  */
+  <ApolloProvider client={client as any}>
     <Rehydrated>
       <App />
     </Rehydrated>
