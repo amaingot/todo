@@ -5,7 +5,8 @@ import { listTodos } from '../graphql/queries';
 import { onCreateTodo, onDeleteTodo, onUpdateTodo } from '../graphql/subscriptions';
 import { ListTodosQueryData, ListTodosQueryVariables } from '../graphql/types';
 
-export interface WithTodoListProps extends DataValue<ListTodosQueryData, ListTodosQueryVariables> {
+export interface WithTodoListProps
+  extends Partial<DataValue<ListTodosQueryData, ListTodosQueryVariables>> {
   subscribeToUpdateTodo: () => void;
   subscribeToCreateTodo: () => void;
   subscribeToDeleteTodo: () => void;
@@ -26,7 +27,17 @@ const withTodoList = <TProps extends {}>(
       const { data } = r;
       if (!data) {
         // We need to figure out something cool to do here.
-        throw new Error();
+        return {
+          subscribeToUpdateTodo: () => {
+            return;
+          },
+          subscribeToCreateTodo: () => {
+            return;
+          },
+          subscribeToDeleteTodo: () => {
+            return;
+          },
+        };
       }
       return {
         subscribeToUpdateTodo: () =>
