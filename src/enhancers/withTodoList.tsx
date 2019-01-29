@@ -1,6 +1,6 @@
+import { buildSubscription } from 'aws-appsync';
 import { DataValue, graphql, QueryOpts } from 'react-apollo';
 
-import { buildSubscription } from 'aws-appsync';
 import { listTodos } from '../graphql/queries';
 import { onCreateTodo, onDeleteTodo, onUpdateTodo } from '../graphql/subscriptions';
 import { ListTodosQueryData, ListTodosQueryVariables } from '../graphql/types';

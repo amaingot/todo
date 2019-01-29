@@ -7,10 +7,9 @@ import TodoCard from './TodoCard';
 
 class TodoList extends React.Component<WithTodoListProps, {}> {
   public componentDidMount() {
-    const { subscribeToUpdateTodo, subscribeToCreateTodo, subscribeToDeleteTodo } = this.props;
-    subscribeToUpdateTodo();
-    subscribeToCreateTodo();
-    subscribeToDeleteTodo();
+    this.props.subscribeToUpdateTodo();
+    this.props.subscribeToCreateTodo();
+    this.props.subscribeToDeleteTodo();
   }
 
   public render() {
