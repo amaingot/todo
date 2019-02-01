@@ -2,33 +2,16 @@ import * as React from 'react';
 
 import { Checkbox } from '@material-ui/core';
 
-import withUpdateTodo, { WithUpdateTodoProps } from '../enhancers/withUpdateTodo';
-import { Todo } from '../graphql/types';
-
 interface Props {
-  item: Todo;
+  checked: boolean;
+  toggleCheck: () => void;
 }
 
-class TodoCheckbox extends React.Component<Props & WithUpdateTodoProps> {
-  public toggleDone = () => {
-    const { performUpdateTodo, item } = this.props;
-
-    performUpdateTodo({
-      ...item,
-      done: !item.done,
-    });
-  };
+class TodoCheckbox extends React.Component<Props> {
   public render() {
-    const { item } = this.props;
-    return (
-      <Checkbox
-        className="checkboxxxx"
-        onClick={this.toggleDone}
-        checked={item.done}
-        disableRipple
-      />
-    );
+    const { checked, toggleCheck } = this.props;
+    return <Checkbox onClick={toggleCheck} checked={checked} disableRipple />;
   }
 }
 
-export default withUpdateTodo<Props>()(TodoCheckbox);
+export default TodoCheckbox;

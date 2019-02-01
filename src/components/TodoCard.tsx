@@ -9,6 +9,8 @@ import TodoDeleteButton from './TodoDeleteButton';
 export interface Props {
   divider: boolean;
   item: Todo;
+  deleteTodo: () => void;
+  toggleDone: () => void;
 }
 
 class TodoCard extends React.Component<Props> {
@@ -17,14 +19,14 @@ class TodoCard extends React.Component<Props> {
   }
 
   public render() {
-    const { item, divider } = this.props;
+    const { item, divider, deleteTodo, toggleDone } = this.props;
 
     return (
       <ListItem divider={divider}>
-        <TodoCheckbox item={item} />
+        <TodoCheckbox checked={item.done} toggleCheck={toggleDone} />
         <ListItemText primary={item.description} />
         <ListItemSecondaryAction>
-          <TodoDeleteButton todoId={item.id} />
+          <TodoDeleteButton deleteTodo={deleteTodo} />
         </ListItemSecondaryAction>
       </ListItem>
     );

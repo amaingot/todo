@@ -3,14 +3,16 @@ import * as React from 'react';
 import { Button, Grid, Paper, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
-import withCreateTodo, { WithCreateTodoProps } from '../enhancers/withCreateTodo';
+interface Props {
+  performCreateTodo: (description: string) => boolean;
+}
 
 export interface State {
   inputValue: string;
 }
 
-class CreateTodo extends React.Component<WithCreateTodoProps, State> {
-  constructor(props: WithCreateTodoProps) {
+class CreateTodo extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       inputValue: '',
@@ -18,15 +20,15 @@ class CreateTodo extends React.Component<WithCreateTodoProps, State> {
   }
 
   public createTodo = () => {
-    const newTodo = {
-      description: this.state.inputValue,
-      done: false,
-    };
-    this.setState({
-      inputValue: '',
-    });
+    const success = this.props.performCreateTodo(this.state.inputValue);
 
-    this.props.performCreateTodo(newTodo);
+    if (success) {
+      this.setState({
+        inputValue: '',
+      });
+    } else {
+      // lets do an error message here
+    }
   };
 
   public onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,4 +75,4 @@ class CreateTodo extends React.Component<WithCreateTodoProps, State> {
   }
 }
 
-export default withCreateTodo()(CreateTodo);
+export default CreateTodo;

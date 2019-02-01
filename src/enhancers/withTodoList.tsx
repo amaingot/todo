@@ -1,52 +1,33 @@
 import { buildSubscription } from 'aws-appsync';
-import { DataValue, graphql, QueryOpts } from 'react-apollo';
+import { DataValue, graphql } from 'react-apollo';
 
-import { listTodos } from '../graphql/queries';
-import { onCreateTodo, onDeleteTodo, onUpdateTodo } from '../graphql/subscriptions';
-import { ListTodosQueryData, ListTodosQueryVariables } from '../graphql/types';
+import { ListTodosQuery } from 'src/graphql/queries';
+import { onCreateTodo, onDeleteTodo, onUpdateTodo } from 'src/graphql/subscriptions';
+import { ListTodosQueryData, ListTodosQueryVariables } from 'src/graphql/types';
 
-export interface WithTodoListProps
-  extends Partial<DataValue<ListTodosQueryData, ListTodosQueryVariables>> {
+export interface WithTodoListProps {
   subscribeToUpdateTodo: () => void;
   subscribeToCreateTodo: () => void;
   subscribeToDeleteTodo: () => void;
+  listTodosData?: DataValue<ListTodosQueryData, ListTodosQueryVariables>;
 }
 
-const withTodoList = <TProps extends {}>(
-  variables?: (props: TProps) => QueryOpts<ListTodosQueryVariables>
-) =>
-  graphql<TProps, ListTodosQueryData, ListTodosQueryVariables, WithTodoListProps>(listTodos, {
-    options: props => {
-      const generatedOptions = variables ? variables(props) : {};
-      return {
-        fetchPolicy: 'cache-and-network',
-        ...generatedOptions,
-      };
+const withTodoList = <TProps extends {}>(listQueryVariables?: ListTodosQueryVariables) =>
+  graphql<TProps, ListTodosQueryData, ListTodosQueryVariables, WithTodoListProps>(ListTodosQuery, {
+    options: {
+      fetchPolicy: 'cache-and-network',
+      variables: listQueryVariables,
     },
     props: r => {
       const { data } = r;
-      if (!data) {
-        // We need to figure out something cool to do here.
-        return {
-          subscribeToUpdateTodo: () => {
-            return;
-          },
-          subscribeToCreateTodo: () => {
-            return;
-          },
-          subscribeToDeleteTodo: () => {
-            return;
-          },
-        };
-      }
       return {
         subscribeToUpdateTodo: () =>
-          data.subscribeToMore(buildSubscription(onUpdateTodo, listTodos)),
+          data && data.subscribeToMore(buildSubscription(onUpdateTodo, ListTodosQuery)),
         subscribeToCreateTodo: () =>
-          data.subscribeToMore(buildSubscription(onCreateTodo, listTodos)),
+          data && data.subscribeToMore(buildSubscription(onCreateTodo, ListTodosQuery)),
         subscribeToDeleteTodo: () =>
-          data.subscribeToMore(buildSubscription(onDeleteTodo, listTodos)),
-        ...data,
+          data && data.subscribeToMore(buildSubscription(onDeleteTodo, ListTodosQuery)),
+        listTodosData: data,
       };
     },
   });
