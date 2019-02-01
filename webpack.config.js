@@ -16,13 +16,16 @@ module.exports = env => {
           test: /\.tsx?$/,
           loader: "ts-loader",
           options: {
-            // transpileOnly: env.dev || false
+            transpileOnly: env.dev || false
           }
         }
       ]
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".json"]
+      extensions: [".ts", ".tsx", ".js", ".json"],
+      alias: {
+        src: path.resolve(__dirname, "src/"),
+      }
     }
   };
 
@@ -41,7 +44,8 @@ module.exports = env => {
         filename: "bundle.js",
         path: path.resolve(__dirname, "build"),
         publicPath: ASSET_PATH
-      }    };
+      }
+    };
   }
 
   if (env.dev) {
@@ -62,7 +66,7 @@ module.exports = env => {
         port: 9000
       },
       plugins: [
-        // new ForkTsCheckerWebpackPlugin(),
+        new ForkTsCheckerWebpackPlugin(),
         new webpack.HotModuleReplacementPlugin()
       ],
       output: {

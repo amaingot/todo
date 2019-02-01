@@ -24,7 +24,11 @@
     "jsx-no-string-ref": false,
     "max-classes-per-file": false,
     "member-ordering": [false],
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": [
+      true,
+      "dev",
+      ["src"]
+    ],
     "no-submodule-imports": [false],
     "no-string-literal": [false],
     "object-literal-sort-keys": [false]
