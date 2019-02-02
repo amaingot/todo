@@ -3,21 +3,23 @@ import * as React from 'react';
 import { IconButton } from '@material-ui/core';
 import DeleteOutlined from '@material-ui/icons/DeleteOutlined';
 
-import withDeleteTodo, { WithDeleteTodoProps } from '../enhancers/withDeleteTodo';
-
 export interface Props {
-  todoId: string;
+  deleteTodo: () => void;
 }
 
-class TodoDeleteButton extends React.Component<Props & WithDeleteTodoProps, any> {
+class TodoDeleteButton extends React.Component<Props> {
+  public deleteTodo = () => {
+    const { deleteTodo } = this.props;
+    deleteTodo();
+  };
+
   public render() {
-    const { performDeleteTodo } = this.props;
     return (
-      <IconButton aria-label="Delete Todo" onClick={performDeleteTodo}>
+      <IconButton aria-label="Delete Todo" onClick={this.deleteTodo}>
         <DeleteOutlined />
       </IconButton>
     );
   }
 }
 
-export default withDeleteTodo<Props>()(TodoDeleteButton);
+export default TodoDeleteButton;

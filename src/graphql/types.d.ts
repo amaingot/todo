@@ -7,6 +7,12 @@ export interface Todo {
   done: boolean;
 }
 
+export interface ListTodos {
+  __typename: 'ModelTodoConnection';
+  items: Array<Todo | null> | null;
+  nextToken: string | null;
+}
+
 // Machine Generated
 export interface CreateTodoInput {
   id?: string | null;
@@ -103,11 +109,7 @@ export interface ListTodosQueryVariables {
 }
 
 export interface ListTodosQueryData {
-  listTodos: {
-    __typename: 'ModelTodoConnection';
-    items: Array<Todo | null> | null;
-    nextToken: string | null;
-  } | null;
+  listTodos: ListTodos | null;
 }
 
 export interface OnCreateTodoSubscriptionData {
