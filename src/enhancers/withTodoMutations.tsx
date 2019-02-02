@@ -2,7 +2,7 @@ import { CacheOperationTypes, CacheUpdatesOptions } from 'aws-appsync';
 import { graphqlMutation } from 'aws-appsync-react';
 import { compose } from 'react-apollo';
 
-import { createTodo, deleteTodo, updateTodo } from 'src/graphql/mutations';
+import { createTodoMutation, deleteTodoMutation, updateTodoMutation } from 'src/graphql/mutations';
 import {
   CreateTodoMutationVariables,
   DeleteTodoMutationVariables,
@@ -17,9 +17,9 @@ export interface WithTodosMutationsProps {
 
 const withTodoMutations = <TProps extends {}>(options: CacheUpdatesOptions) =>
   compose(
-    graphqlMutation(deleteTodo, options, 'Todo', 'id', CacheOperationTypes.REMOVE),
-    graphqlMutation(createTodo, options, 'Todo', 'id', CacheOperationTypes.ADD),
-    graphqlMutation(updateTodo, options, 'Todo', 'id', CacheOperationTypes.UPDATE)
+    graphqlMutation(deleteTodoMutation, options, 'Todo', 'id', CacheOperationTypes.REMOVE),
+    graphqlMutation(createTodoMutation, options, 'Todo', 'id', CacheOperationTypes.ADD),
+    graphqlMutation(updateTodoMutation, options, 'Todo', 'id', CacheOperationTypes.UPDATE)
   ) as (
     WrappedComponent: React.ComponentType<TProps & WithTodosMutationsProps>
   ) => React.ComponentClass<TProps, any>;

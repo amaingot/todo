@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const GetTodoQuery = gql`
+export const getTodoQuery = gql`
   query GetTodo($id: ID!) {
     getTodo(id: $id) {
       id
@@ -9,7 +9,7 @@ export const GetTodoQuery = gql`
     }
   }
 `;
-export const ListTodosQuery = gql`
+export const listTodosQuery = gql`
   query ListTodos($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
     listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
