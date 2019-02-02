@@ -1,3 +1,4 @@
+/* tslint:disable:no-console */
 import { DataValue, graphql } from 'react-apollo';
 
 import { deleteTodo } from 'src/graphql/mutations';
