@@ -10,7 +10,7 @@ interface Props {
 class TodoCheckbox extends React.Component<Props> {
   public render() {
     const { checked, toggleCheck } = this.props;
-    return <Checkbox onClick={toggleCheck} checked={checked} disableRipple />;
+    return <Checkbox onClick={toggleCheck} checked={checked} />;
   }
 }
 

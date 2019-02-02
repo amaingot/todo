@@ -7,19 +7,19 @@ import TodoCard from './TodoCard';
 
 interface Props {
   todos: Todo[];
-  toggleDone: (id: string, done: boolean) => void;
-  deleteTodo: (id: string) => void;
+  toggleDone: (todo: Todo) => void;
+  deleteTodo: (todo: Todo) => void;
 }
 
 class TodoList extends React.Component<Props, {}> {
-  public toggleDone = (id: string, done: boolean) => () => {
+  public toggleDone = (todo: Todo) => () => {
     const { toggleDone } = this.props;
-    toggleDone(id, done);
+    toggleDone(todo);
   };
 
-  public deleteTodo = (id: string) => () => {
+  public deleteTodo = (todo: Todo) => () => {
     const { deleteTodo } = this.props;
-    deleteTodo(id);
+    deleteTodo(todo);
   };
 
   public render() {
@@ -30,8 +30,8 @@ class TodoList extends React.Component<Props, {}> {
         <List style={{ overflow: 'scroll' }}>
           {todos.map((todo, i) => (
             <TodoCard
-              toggleDone={this.toggleDone(todo.id, !todo.done)}
-              deleteTodo={this.deleteTodo(todo.id)}
+              toggleDone={this.toggleDone(todo)}
+              deleteTodo={this.deleteTodo(todo)}
               key={todo.id}
               item={todo}
               divider={i !== todos.length - 1}

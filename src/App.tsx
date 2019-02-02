@@ -5,48 +5,29 @@ import CreateTodo from 'src/components/CreateTodo';
 import Layout from 'src/components/Layout';
 import TodoList from 'src/components/TodoList';
 import withTodos, { WithTodosProps } from 'src/enhancers/withTodos';
-// import withCreateTodo, { WithCreateTodoProps } from 'src/enhancers/withCreateTodo';
-// import withDeleteTodo, { WithDeleteTodoProps } from 'src/enhancers/withDeleteTodo';
-// import withTodoList, { WithTodoListProps } from 'src/enhancers/withTodoList';
-// import withUpdateTodo, { WithUpdateTodoProps } from 'src/enhancers/withUpdateTodo';
 import { Todo } from 'src/graphql/types';
-
-// type Props = WithTodoListProps & WithCreateTodoProps & WithDeleteTodoProps & WithUpdateTodoProps;
 
 class App extends React.Component<WithTodosProps, {}> {
   constructor(props: WithTodosProps) {
     super(props);
+    props.subscribeToCreateTodo();
+    props.subscribeToDeleteTodo();
+    props.subscribeToUpdateTodo();
   }
 
-  public createTodo = (description: string): boolean => {
-    const { performCreateTodo } = this.props;
-    try {
-      performCreateTodo({ description, done: false });
-      return true;
-    } catch (e) {
-      return false;
-    }
+  public createTodo = (description: string) => {
+    const { createTodo } = this.props;
+    createTodo({ input: { description, done: false } });
   };
 
-  public deleteTodo = (id: string) => {
-    const { performDeleteTodo, listTodosData } = this.props;
-    const todo: Todo = {
-      __typename: 'Todo',
-      id,
-      description: '',
-      done: false,
-    };
-
-    if (listTodosData && listTodosData.listTodos && listTodosData.listTodos.items) {
-      const index = 
-    }
-
-    performDeleteTodo(todo);
+  public deleteTodo = (todo: Todo) => {
+    const { deleteTodo } = this.props;
+    deleteTodo({ input: { id: todo.id } });
   };
 
-  public toggleDone = (id: string, done: boolean) => {
-    const { performUpdateTodo } = this.props;
-    performUpdateTodo({ id, done });
+  public toggleDone = (todo: Todo) => {
+    const { updateTodo } = this.props;
+    updateTodo({ input: { id: todo.id, description: todo.description, done: !todo.done } });
   };
 
   public render() {
@@ -65,16 +46,10 @@ class App extends React.Component<WithTodosProps, {}> {
     return (
       <Layout>
         <CreateTodo performCreateTodo={this.createTodo} />
-        <TodoList todos={todos} deleteTodo={this.deleteTodo} toggleDone={this.deleteTodo} />
+        <TodoList todos={todos} deleteTodo={this.deleteTodo} toggleDone={this.toggleDone} />
       </Layout>
     );
   }
 }
 
-// export default compose(
-//   withTodoList(),
-//   withCreateTodo(),
-//   withUpdateTodo(),
-//   withDeleteTodo()
-// )(App);
 export default withTodos()(App);

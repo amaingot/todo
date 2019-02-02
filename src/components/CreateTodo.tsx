@@ -4,7 +4,7 @@ import { Button, Grid, Paper, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
 interface Props {
-  performCreateTodo: (description: string) => boolean;
+  performCreateTodo: (description: string) => void;
 }
 
 export interface State {
@@ -20,15 +20,10 @@ class CreateTodo extends React.Component<Props, State> {
   }
 
   public createTodo = () => {
-    const success = this.props.performCreateTodo(this.state.inputValue);
-
-    if (success) {
-      this.setState({
-        inputValue: '',
-      });
-    } else {
-      // lets do an error message here
-    }
+    this.props.performCreateTodo(this.state.inputValue);
+    this.setState({
+      inputValue: '',
+    });
   };
 
   public onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
