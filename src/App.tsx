@@ -8,11 +8,21 @@ import withTodos, { WithTodosProps } from 'src/enhancers/withTodos';
 import { Todo } from 'src/graphql/types';
 
 class App extends React.Component<WithTodosProps, {}> {
+  private unsubscribeToCreateTodo: () => void;
+  private unsubscribeToUpdateTodo: () => void;
+  private unsubscribeToDeleteTodo: () => void;
+
   constructor(props: WithTodosProps) {
     super(props);
-    props.subscribeToCreateTodo();
-    props.subscribeToDeleteTodo();
-    props.subscribeToUpdateTodo();
+    this.unsubscribeToCreateTodo = props.subscribeToCreateTodo();
+    this.unsubscribeToUpdateTodo = props.subscribeToDeleteTodo();
+    this.unsubscribeToDeleteTodo = props.subscribeToUpdateTodo();
+  }
+
+  public componentWillUnmount() {
+    this.unsubscribeToCreateTodo();
+    this.unsubscribeToUpdateTodo();
+    this.unsubscribeToDeleteTodo();
   }
 
   public createTodo = (description: string) => {
@@ -42,7 +52,6 @@ class App extends React.Component<WithTodosProps, {}> {
         }
       });
     }
-
     return (
       <Layout>
         <CreateTodo performCreateTodo={this.createTodo} />

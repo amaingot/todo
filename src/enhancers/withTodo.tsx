@@ -3,47 +3,51 @@ import * as React from 'react';
 import { compose, DataValue, graphql } from 'react-apollo';
 
 import withTodoMutations, { WithTodosMutationsProps } from 'src/enhancers/withTodoMutations';
-import { listTodosQuery } from 'src/graphql/queries';
+import { getTodoQuery } from 'src/graphql/queries';
 import {
   onCreateTodoSubscription,
   onDeleteTodoSubscription,
   onUpdateTodoSubscription,
 } from 'src/graphql/subscriptions';
-import { ListTodosQueryData, ListTodosQueryVariables } from 'src/graphql/types';
+import { GetTodoQueryData, GetTodoQueryVariables } from 'src/graphql/types';
 
-export type WithTodosProps = WithTodoListProps & WithTodosMutationsProps;
+export type WithTodoProps = WithSingleTodoProps & WithTodosMutationsProps;
 
-interface WithTodoListProps {
-  subscribeToUpdateTodo: () => () => void;
-  subscribeToCreateTodo: () => () => void;
-  subscribeToDeleteTodo: () => () => void;
-  listTodosData: DataValue<ListTodosQueryData, ListTodosQueryVariables>;
+interface WithSingleTodoProps {
+  subscribeToUpdateTodo: () => void;
+  subscribeToCreateTodo: () => void;
+  subscribeToDeleteTodo: () => void;
+  todoData?: DataValue<GetTodoQueryData, GetTodoQueryVariables>;
 }
 
-const withTodos = <TProps extends {}>(
-  mapPropsToQueryVariables?: (props: TProps) => ListTodosQueryVariables
-) => (Component: React.ComponentType<TProps & WithTodosProps>) => {
+interface WithTodoIdProp {
+  id: string;
+}
+
+const withTodo = <TProps extends WithTodoIdProp>(
+  mapPropsToQueryVariables?: (props: TProps) => GetTodoQueryVariables
+) => (Component: React.ComponentType<TProps & WithTodoProps>) => {
   return class Parent extends React.Component<TProps, {}> {
     public render() {
       const mappedQueryVariables = mapPropsToQueryVariables
         ? mapPropsToQueryVariables(this.props)
         : {};
 
-      const queryVariables: ListTodosQueryVariables = {
+      const queryVariables: GetTodoQueryVariables = {
         // default query variables
-        limit: 500,
+        id: this.props.id,
         // mapped query variables (they will override the default)
         ...mappedQueryVariables,
       };
 
       const cacheUpdateOptions: CacheUpdatesOptions = {
-        query: listTodosQuery,
+        query: getTodoQuery,
         variables: queryVariables,
       };
 
       const NewComponent = compose(
-        graphql<TProps, ListTodosQueryData, ListTodosQueryVariables, WithTodoListProps>(
-          listTodosQuery,
+        graphql<TProps, GetTodoQueryData, GetTodoQueryVariables, WithSingleTodoProps>(
+          getTodoQuery,
           {
             options: {
               fetchPolicy: 'cache-and-network',
@@ -51,25 +55,23 @@ const withTodos = <TProps extends {}>(
             },
             props: r => {
               const { data } = r;
-              if (!data) {
-                throw new Error(
-                  'This stucks, the data at WithTodos was not there when we needed it!'
-                );
-              }
               return {
                 subscribeToUpdateTodo: () =>
+                  data &&
                   data.subscribeToMore(
                     buildSubscription(onUpdateTodoSubscription, cacheUpdateOptions)
                   ),
                 subscribeToCreateTodo: () =>
+                  data &&
                   data.subscribeToMore(
                     buildSubscription(onCreateTodoSubscription, cacheUpdateOptions)
                   ),
                 subscribeToDeleteTodo: () =>
+                  data &&
                   data.subscribeToMore(
                     buildSubscription(onDeleteTodoSubscription, cacheUpdateOptions)
                   ),
-                listTodosData: data,
+                todoData: data,
               };
             },
           }
@@ -82,4 +84,4 @@ const withTodos = <TProps extends {}>(
   };
 };
 
-export default withTodos;
+export default withTodo;

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const onCreateTodo = gql`
+export const onCreateTodoSubscription = gql`
   subscription OnCreateTodo {
     onCreateTodo {
       id
@@ -9,7 +9,7 @@ export const onCreateTodo = gql`
     }
   }
 `;
-export const onUpdateTodo = gql`
+export const onUpdateTodoSubscription = gql`
   subscription OnUpdateTodo {
     onUpdateTodo {
       id
@@ -18,7 +18,7 @@ export const onUpdateTodo = gql`
     }
   }
 `;
-export const onDeleteTodo = gql`
+export const onDeleteTodoSubscription = gql`
   subscription OnDeleteTodo {
     onDeleteTodo {
       id
