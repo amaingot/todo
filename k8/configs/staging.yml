@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-app-config
+  namespace: staging
+data:
+  GCP_PROJECT_ID: "hmm-dev"
+  POSTGRES_DATABASE: "todo-app-staging"
+  POSTGRES_USERNAME: "postgres"
+  GCP_IDP_TENANT_ID: "todo-staging-g7vip"

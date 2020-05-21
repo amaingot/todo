@@ -1,80 +1,41 @@
 {
   "name": "todo",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "A simple todo app",
+  "author": "Alex Maingot (alex@maingot.us)",
+  "homepage": "https://github.com/amaingot/todo",
   "private": true,
   "scripts": {
-    "build": "./node_modules/.bin/webpack --env.prod",
-    "fresh": "rm -rf node_modules build reports coverage",
-    "lint:ci": "npm run lint -- --format junit --out reports/tslint.xml",
-    "lint:fix": "npm run lint -- --fix",
-    "lint": "./node_modules/.bin/tslint --project '.'",
-    "test:coverage:ci": "npm run test -- --coverage --no-cache --maxWorkers=6 --ci",
-    "test:coverage": "npm run test -- --coverage --no-cache --maxWorkers=6",
-    "test:ci": "npm run test -- --ci --reporters=default --reporters=jest-junit",
-    "test:watch": "npm run test -- --watch",
-    "test": "./node_modules/.bin/jest",
-    "check": "npm run lint && npm run test:coverage",
-    "start": "./node_modules/.bin/webpack-dev-server --env.dev --watch"
-  },
-  "dependencies": {
-    "@material-ui/core": "^3.9.1",
-    "@material-ui/icons": "^3.0.2",
-    "apollo-client": "^2.4.12",
-    "aws-amplify": "^1.1.19",
-    "aws-appsync": "^1.7.1",
-    "aws-appsync-react": "^1.2.6",
-    "graphql-tag": "^2.10.1",
-    "react": "^16.7.0",
-    "react-apollo": "^2.4.0",
-    "react-dom": "^16.7.0"
+    "clean": "rm -rf node_modules",
+    "generate": "graphql-codegen --config codegen.yml",
+    "typeorm": "yarn --cwd=server typeorm",
+    "postinstall": "yarn generate",
+    "start": "concurrently \"yarn:start:web\" \"yarn:start:server\"",
+    "start:web": "yarn --cwd=web start",
+    "start:server": "yarn --cwd=server start",
+    "start:in-container": "yarn --cwd=server start:in-container",
+    "build:web": "yarn --cwd=web build"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.1.15",
-    "@types/enzyme-adapter-react-16": "^1.0.3",
-    "@types/jest": "^23.3.13",
-    "@types/node": "10.12.18",
-    "@types/react": "16.7.21",
-    "@types/react-dom": "16.0.11",
-    "@types/sinon": "^7.0.5",
-    "enzyme": "^3.8.0",
-    "enzyme-adapter-react-16": "^1.8.0",
-    "fork-ts-checker-webpack-plugin": "^0.5.2",
-    "jest": "^24.0.0",
-    "jest-junit": "^6.1.0",
-    "prettier": "^1.16.1",
-    "raf": "^3.4.1",
-    "sinon": "^7.2.3",
-    "ts-jest": "^23.10.5",
-    "ts-loader": "^5.3.3",
-    "tslint": "^5.12.1",
-    "tslint-config-prettier": "^1.17.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "tslint-react": "^3.6.0",
-    "typescript": "^3.2.4",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "@graphql-codegen/cli": "^1.13.5",
+    "@graphql-codegen/typescript": "^1.13.5",
+    "@graphql-codegen/typescript-operations": "^1.13.5",
+    "@graphql-codegen/typescript-react-apollo": "^1.13.5",
+    "@graphql-codegen/typescript-resolvers": "^1.13.5",
+    "concurrently": "^5.2.0",
+    "graphql-config": "^3.0.2",
+    "jest-junit": "^10.0.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "transform": {
-      "\\.(ts|tsx)$": "ts-jest"
-    },
-    "setupFiles": [
-      "raf/polyfill"
-    ],
-    "testRegex": "/src/.*test.(ts|tsx|js)$",
-    "setupFilesAfterEnv": [
-      "<rootDir>scripts/setupTests.ts"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "lines": 0
-      }
-    }
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amaingot/todo.git"
+  },
+  "keywords": [
+    "react",
+    "typescript"
+  ],
+  "workspaces": [
+    "server",
+    "web"
+  ]
 }

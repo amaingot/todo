@@ -1,127 +1,218 @@
-version: 2
+version: 2.1
+
 jobs:
-    build:
-        working_directory: ~/todo
-        docker:
-            - image: circleci/node:11
-        steps:
-            - checkout
+  build-frontend:
+    working_directory: ~/todo
+    docker:
+      - image: circleci/node:13
+    steps:
+      - checkout
 
-            - restore_cache:
-                keys:
-                    - v1-dependencies-{{ checksum "package-lock.json" }}
-                    - v1-dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies
+      - run:
+          name: Installing dependencies
+          command: yarn
 
-            - run: 
-                name: Installing All Packages
-                command: npm install
+      # - run:
+      #     name: Run tests for the user interface
+      #     command: yarn --cwd=web test --ci --runInBand --reporters=default --reporters=jest-junit
+      #     environment:
+      #       JEST_JUNIT_OUTPUT_DIR: ../test-results/web-test-results.xml
 
-            - run:
-                name: TypeScript Linter
-                command: mkdir reports && npm run lint:ci
+      - run:
+          name: Build user interface
+          command: |
+            REACT_APP_SHA=$CIRCLE_SHA1 \
+              yarn build:web
 
-            - run:
-                name: Running tests
-                command: npm run test:ci
-                environment:
-                    JEST_JUNIT_OUTPUT: "reports/test-results.xml"
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
 
-            - run:
-                name: Running test coverage
-                command: npm run test:coverage:ci
-                environment:
-                    JEST_JUNIT_OUTPUT: "reports/test-coverage.xml"
+      - store_test_results:
+          path: test-results
 
-            - run:
-                name: Build Bundle for Distribution
-                command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-            - save_cache:
-                paths:
-                    - node_modules
-                key: v1-dependencies-{{ checksum "package-lock.json" }}
+  build-backend:
+    working_directory: ~/todo
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      PROJECT_NAME: "todo-app"
+      GOOGLE_COMPUTE_ZONE: "us-central1"
+    steps:
+      - attach_workspace:
+          at: .
 
-            - run:
-                name: Clean up workspace
-                command: rm -rf node_modules
-            
-            - store_test_results:
-                path: reports/
-            - store_artifacts:
-                path: reports/
+      - run:
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
-            - persist_to_workspace:
-                root: ./
-                paths:
-                    - ./
+      - setup_remote_docker
 
-    deploy-env:
-        working_directory: ~/todo
-        docker:
-            - image: circleci/python:2.7-jessie
-        steps:
-            - checkout
-            - attach_workspace:
-                at: ./
-            - run: 
-                name: Install awscli
-                command: sudo pip install awscli
-            - run: 
-                name: Deploy bundle to S3
-                command: aws s3 sync build/ s3://todo.maingot.us/${CIRCLE_BRANCH} --acl public-read
-            - run:
-                name: Purge cache for environment bundle
-                command: aws cloudfront create-invalidation --distribution-id $CDN_DISTRIBUTION_ID --paths "/${CIRCLE_BRANCH}/*"
+      - run:
+          name: Build docker image locally
+          command: |
+            docker build -t ${PROJECT_NAME} . -f k8/Dockerfile \
+                --build-arg SHA=${CIRCLE_SHA1}
 
-    deploy-prod:
-        working_directory: ~/todo
-        docker:
-            - image: circleci/python:2.7-jessie
-        steps:
-            - checkout
-            - attach_workspace:
-                at: ./
-            - run: 
-                name: Install awscli
-                command: sudo pip install awscli
-            - run: 
-                name: Deploy bundle to S3
-                command: aws s3 sync build/ s3://todo.maingot.us/production --acl public-read
-            - run: 
-                name: Deploy index.html
-                command: aws s3 sync public/ s3://todo.maingot.us --acl public-read
-            - run:
-                name: Purge cache for everything
-                command: aws cloudfront create-invalidation --distribution-id $CDN_DISTRIBUTION_ID --paths "/*"
+      - run:
+          name: Tag docker image
+          command: |
+            docker tag ${PROJECT_NAME} gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+
+      - run:
+          name: Login to GCP Container Registry
+          command: |
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://gcr.io
+
+      - run:
+          name: Push docker image to GCR
+          command: |
+            docker push gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+
+      - run:
+          name: Add branch tag to the docker image in GCR
+          command: |
+            gcloud container images add-tag \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_BRANCH}
+
+  deploy-staging:
+    working_directory: ~/todo
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      PROJECT_NAME: "todo-app"
+      GOOGLE_COMPUTE_ZONE: "us-central1"
+      K8_CLUSTER_NAME: "hmm"
+      K8_CLUSTER_ZONE: "us-central1-c"
+    steps:
+      - checkout
+
+      - run:
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${K8_CLUSTER_ZONE}
+            gcloud --quiet config set container/cluster ${K8_CLUSTER_NAME}
+            gcloud --quiet container clusters get-credentials ${K8_CLUSTER_NAME}
+
+      - run:
+          name: Deploy ingress, configs and secrets maps
+          command: |
+            kubectl apply -f k8/configs/staging.yml
+            kubectl apply -f k8/secrets/staging.yml
+            kubectl apply -f k8/ingress/staging.yml
+
+      - run:
+          name: Deploy App
+          command: |
+            cd k8
+            sed -i "s/\${parameters.tag}/${CIRCLE_SHA1}/g" deployment.yml
+            sed -i "s/\${parameters.namespace}/staging/g" deployment.yml
+            kubectl apply -f deployment.yml --namespace="staging"
+
+  deploy-prod:
+    working_directory: ~/todo
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      K8_CLUSTER_NAME: "hmm"
+      K8_CLUSTER_ZONE: "us-central1-c"
+      PROJECT_NAME: "todo-app"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${K8_CLUSTER_ZONE}
+            gcloud --quiet config set container/cluster ${K8_CLUSTER_NAME}
+            gcloud --quiet container clusters get-credentials ${K8_CLUSTER_NAME}
+
+      - run:
+          name: Add prod tag to images
+          command: |
+            gcloud container images add-tag \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_TAG} --quiet
+            gcloud container images add-tag \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
+              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:latest --quiet
+
+      - run:
+          name: Deploy ingress, configs and secrets maps
+          command: |
+            kubectl apply -f k8/configs/prod.yml
+            kubectl apply -f k8/secrets/prod.yml
+            kubectl apply -f k8/ingress/prod.yml
+
+      - run:
+          name: Deploy App to Prod
+          command: |
+            cd k8
+            sed -i "s/\${parameters.tag}/${CIRCLE_SHA1}/g" deployment.yml
+            sed -i "s/\${parameters.namespace}/prod/g" deployment.yml
+            kubectl apply -f deployment.yml --namespace="prod"
 
 workflows:
-    version: 2
-    todo:
-        jobs:
-            - build:
-                context: maingot
-                filters:
-                    branches:
-                        only: /.*/
-                    tags:
-                        only: /.*/
+  version: 2
+  todo:
+    jobs:
+      - build-frontend:
+          context: maingot
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
 
-            - deploy-env:
-                context: maingot
-                requires:
-                    - build
-                filters:
-                    branches:
-                        only: /^(?!production).*$/
-                    tags:
-                        ignore: /.*/
+      - build-backend:
+          context: maingot
+          requires:
+            - build-frontend
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
 
-            - deploy-prod:
-                context: maingot
-                requires:
-                    - build
-                filters:
-                    branches:
-                        ignore: /.*/
-                    tags:
-                        only: /^(v\d+)\.\d+.(\d+)$/
+      - deploy-staging:
+          context: maingot
+          requires:
+            - build-backend
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /.*/
+
+      - deploy-prod:
+          context: maingot
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/

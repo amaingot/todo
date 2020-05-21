@@ -1,0 +1,35 @@
+overwrite: true
+schema: server/src/graphql/schema.ts
+config:
+  declarationKind: "interface"
+  maybeValue: T | undefined
+  scalars:
+    DateTime: Date
+    Email: string
+
+generates:
+  server/src/graphql/types.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
+      contextType: ./context#GraphqlContext
+      noSchemaStitching: true
+      mappers:
+        Client: "../db#Client as ClientModel"
+        Job: "../db#Job as JobModel"
+        Employee: "../db#Employee as EmployeeModel"
+        Customer: "../db#Customer as CustomerModel"
+
+  web/src/graphql/hooks.tsx:
+    documents: web/src/graphql/*.graphql
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      gqlImport: apollo-boost#gql

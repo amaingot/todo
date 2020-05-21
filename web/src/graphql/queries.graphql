@@ -1,0 +1,25 @@
+query ListTodos($input: PaginationInput) {
+  listTodos(input: $input) {
+    data {
+      id
+      description
+      done
+      createdAt
+      updatedAt
+    }
+    cursor {
+      beforeCursor
+      afterCursor
+    }
+  }
+}
+
+query GetTodo($id: ID!) {
+  getTodo(id: $id) {
+    id
+    description
+    done
+    createdAt
+    updatedAt
+  }
+}

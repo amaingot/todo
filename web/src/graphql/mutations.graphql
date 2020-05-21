@@ -1,0 +1,23 @@
+mutation CreateTodo($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    description
+    done
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateTodo($id: ID!, $input: UpdateTodoInput!) {
+  updateTodo(id: $id, input: $input) {
+    id
+    description
+    done
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteTodo($id: ID!) {
+  deleteTodo(id: $id)
+}

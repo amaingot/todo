@@ -1,0 +1,139 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          # The parameter below is replaced during circle build
+          image: gcr.io/hmm-dev/todo-app:${parameters.tag}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "0.5"
+            requests:
+              memory: "256Mi"
+              cpu: "0.1"
+          envFrom:
+            - configMapRef:
+                name: todo-app-config
+            - secretRef:
+                name: todo-app-secrets
+
+          readinessProbe:
+            httpGet:
+              path: /_health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 15
+
+          livenessProbe:
+            httpGet:
+              path: /_health/alive
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+
+          env:
+            - name: POSTGRES_HOST
+              value: todo-app-postgres
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/config/GCP_SERVICE_ACCOUNT_KEY"
+          volumeMounts:
+            - name: gcp-key
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: gcp-key
+          secret:
+            secretName: todo-app-secrets
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-service
+  labels:
+    name: todo-app
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: todo-app
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-app-postgres
+spec:
+  selector:
+    matchLabels:
+      app: todo-app-postgres
+  serviceName: todo-app-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: todo-app-postgres
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: todo-app-postgres
+          image: postgres:9.6-alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-app-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: POSTGRES_DATABASE
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata/todo-app_pgdata
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data/pgdata
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app: todo-app-postgres
