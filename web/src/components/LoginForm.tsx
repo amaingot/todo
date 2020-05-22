@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid, Paper, TextField, Typography } from "@material-ui/core";
+import { Fab, Grid, Paper, TextField, Typography } from "@material-ui/core";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import firebase from "firebase/app";
 
@@ -46,15 +46,14 @@ const LoginForm: React.FC = () => {
             />
           </Grid>
           <Grid xs={2} md={1} item>
-            <Button
-              fullWidth
-              variant="contained"
+            <Fab
+              size="small"
               color="primary"
               onClick={login}
               disabled={loading}
             >
-              <ArrowForwardIcon /> Add
-            </Button>
+              <ArrowForwardIcon />
+            </Fab>
           </Grid>
           {error && (
             <Grid xs={12} item>

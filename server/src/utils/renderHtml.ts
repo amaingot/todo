@@ -7,7 +7,7 @@ import config from "./config";
 
 const renderHtml = (app: Application) => {
   const assetPath =
-    process.env.NODE_ENV === "production"
+    config.get("NODE_ENV") === "production"
       ? path.join(__dirname, "../../assets")
       : path.join(__dirname, "../../../web/build");
 
@@ -19,7 +19,7 @@ const renderHtml = (app: Application) => {
     TENANT_ID,
   });
 
-  app.use(express.static(path.join(__dirname, assetPath)));
+  app.use(express.static(assetPath));
 
   app.get("/*", (_req, res) => {
     res.send(html);

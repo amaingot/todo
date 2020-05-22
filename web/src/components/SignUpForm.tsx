@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, Grid, Paper, TextField, Typography } from "@material-ui/core";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import firebase from "firebase/app";
+
+import { Fab, Grid, Paper, TextField, Typography } from "@material-ui/core";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+
 import { useSignUpMutation } from "../graphql/hooks";
 
 const SignUpForm: React.FC = () => {
@@ -32,7 +34,7 @@ const SignUpForm: React.FC = () => {
 
   return (
     <Paper style={{ margin: 16, padding: 16 }}>
-      <Typography variant="h3" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         Sign Up
       </Typography>
       <form>
@@ -57,15 +59,14 @@ const SignUpForm: React.FC = () => {
             />
           </Grid>
           <Grid xs={2} md={1} item>
-            <Button
-              fullWidth
-              variant="contained"
+            <Fab
+              size="small"
               color="primary"
               onClick={login}
               disabled={loading}
             >
               <ArrowForwardIcon />
-            </Button>
+            </Fab>
           </Grid>
           {error && (
             <Grid xs={12} item>
