@@ -13,11 +13,9 @@ const renderHtml = (app: Application) => {
 
   const rawHtml = fs.readFileSync(`${assetPath}/index.html`, "utf8");
 
-  const COOKIE_KEY = config.get("COOKIE_KEY");
   const TENANT_ID = config.get("GCP_IDP_TENANT_ID");
 
   const html = Mustache.render(rawHtml, {
-    COOKIE_KEY,
     TENANT_ID,
   });
 
