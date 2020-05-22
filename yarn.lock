@@ -60,6 +60,15 @@
   resolved "https://registry.yarnpkg.com/@apollographql/graphql-playground-html/-/graphql-playground-html-1.6.24.tgz#3ce939cb127fb8aaa3ffc1e90dff9b8af9f2e3dc"
   integrity sha512-8GqG48m1XqyXh4mIZrtB5xOhUwSsh1WsrrsaZQOEYYql3YN9DEu9OOSg0ILzXHZo/h2Q74777YE4YzlArQzQEQ==
 
+"@axelspringer/graphql-google-pubsub@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@axelspringer/graphql-google-pubsub/-/graphql-google-pubsub-2.1.0.tgz#2e18e7313f7e5c710ec59ca2809b17b6d9ea0ea4"
+  integrity sha512-mVbmheztaVneiiD9XmAaGNcH/vHlzSOSAPSmQSTZ86FhfvM+UjU0E0jZlOAKTDX+qsgn3POIENa2LMSybkUHGA==
+  dependencies:
+    "@google-cloud/pubsub" "^1.1.5"
+    graphql-subscriptions "^1.1.0"
+    iterall "^1.2.2"
+
 "@babel/code-frame@7.8.3", "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.8.3.tgz#33e25903d7481181534e12ec0a25f16b6fcf419e"
@@ -1418,6 +1427,11 @@
     arrify "^2.0.0"
     extend "^3.0.2"
 
+"@google-cloud/precise-date@^1.0.0":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@google-cloud/precise-date/-/precise-date-1.0.3.tgz#39c600ed52213f4158692a72c90d13b2162a93d2"
+  integrity sha512-wWnDGh9y3cJHLuVEY8t6un78vizzMWsS7oIWKeFtPj+Ndy+dXvHW0HTx29ZUhen+tswSlQYlwFubvuRP5kKdzQ==
+
 "@google-cloud/precise-date@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@google-cloud/precise-date/-/precise-date-2.0.0.tgz#20539d6b69356cf85183641b30442d445b1345c7"
@@ -1442,6 +1456,27 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@google-cloud/promisify/-/promisify-2.0.0.tgz#d69db22c18551ef8217e59430f06a59cdcd5e9db"
   integrity sha512-r0miGK77TPem+AV3jZtUXopz9DQzeSTvsgQkamfDzkTiurkbHHTmBJQ1YQqF9Z4XjqcNKlmA9n8EvFOptNX0sg==
+
+"@google-cloud/pubsub@^1.1.5":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@google-cloud/pubsub/-/pubsub-1.7.3.tgz#0fa51d67eb4db979a66b05738d81c3cef992b5bf"
+  integrity sha512-v+KdeaOS17WtHnsDf2bPGxKDT9HIRPYo3n+WsAEmvAzDHnh8q65mFcuYoQxuy2iRhmN/1ql2a0UU2tAAL7XZ8Q==
+  dependencies:
+    "@google-cloud/paginator" "^2.0.0"
+    "@google-cloud/precise-date" "^1.0.0"
+    "@google-cloud/projectify" "^1.0.0"
+    "@google-cloud/promisify" "^1.0.0"
+    "@types/duplexify" "^3.6.0"
+    "@types/long" "^4.0.0"
+    arrify "^2.0.0"
+    async-each "^1.0.1"
+    extend "^3.0.2"
+    google-auth-library "^5.5.0"
+    google-gax "^1.14.2"
+    is-stream-ended "^0.1.4"
+    lodash.snakecase "^4.1.1"
+    p-defer "^3.0.0"
+    protobufjs "^6.8.1"
 
 "@google-cloud/pubsub@^2.0.0":
   version "2.0.0"
@@ -7153,7 +7188,7 @@ google-auth-library@^6.0.0:
     jws "^4.0.0"
     lru-cache "^5.0.0"
 
-google-gax@^1.11.0, google-gax@^1.12.0, google-gax@^1.13.0:
+google-gax@^1.11.0, google-gax@^1.12.0, google-gax@^1.13.0, google-gax@^1.14.2:
   version "1.15.3"
   resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.15.3.tgz#e88cdcbbd19c7d88cc5fd7d7b932c4d1979a5aca"
   integrity sha512-3JKJCRumNm3x2EksUTw4P1Rad43FTpqrtW9jzpf3xSMYXx+ogaqTM1vGo7VixHB4xkAyATXVIa3OcNSh8H9zsQ==
@@ -7244,7 +7279,7 @@ graphql-request@^1.5.0:
   dependencies:
     cross-fetch "2.2.2"
 
-graphql-subscriptions@^1.0.0:
+graphql-subscriptions@^1.0.0, graphql-subscriptions@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/graphql-subscriptions/-/graphql-subscriptions-1.1.0.tgz#5f2fa4233eda44cf7570526adfcf3c16937aef11"
   integrity sha512-6WzlBFC0lWmXJbIVE8OgFgXIP4RJi3OQgTPa0DVMsDXdpRDjTsM1K9wfl5HSYX7R87QAGlvcv2Y4BIZa/ItonA==

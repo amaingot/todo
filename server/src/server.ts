@@ -1,19 +1,16 @@
+import http from "http";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { getConnection } from "typeorm";
 
-import { closeConnection, openConnection } from "./db";
+import { openConnection } from "./db";
 import schema from "./graphql/schema";
 import resolvers from "./graphql/resolvers";
 import { GraphqlContext } from "./graphql/context";
-import { appLogger, appErrorLogger, logger } from "./utils/logger";
+import { appLogger, appErrorLogger } from "./utils/logger";
 import renderHtml from "./utils/renderHtml";
 
-const config = {
-  name: "todo",
-  port: 8080,
-  host: "0.0.0.0",
-};
+const PORT = 8080;
 
 const app = express();
 
@@ -37,6 +34,7 @@ const server = new ApolloServer({
 });
 
 server.applyMiddleware({ app });
+server.installSubscriptionHandlers;
 
 app.use(appErrorLogger());
 
@@ -64,29 +62,41 @@ app.get("/_health/alive", async (_req, res) => {
   }
 });
 
-const expressServer = app.listen(config.port, config.host, (e) => {
-  if (e) {
-    throw new Error("Internal Server Error");
-  }
-  logger.info(`${config.name} running on ${config.host}:${config.port}`);
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+httpServer.listen(PORT, () => {
+  console.log(
+    `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
+  );
+  console.log(
+    `🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`
+  );
 });
 
-const shutDown = () => {
-  logger.info("Received kill signal, shutting down gracefully");
-  expressServer.close(async () => {
-    logger.info("Closed out remaining connections");
+// const expressServer = app.listen(config.port, config.host, (e) => {
+//   if (e) {
+//     throw new Error("Internal Server Error");
+//   }
+//   logger.info(`${config.name} running on ${config.host}:${config.port}`);
+// });
 
-    await closeConnection();
-    process.exit(0);
-  });
+// const shutDown = () => {
+//   logger.info("Received kill signal, shutting down gracefully");
+//   expressServer.close(async () => {
+//     logger.info("Closed out remaining connections");
 
-  setTimeout(() => {
-    logger.error(
-      "Could not close connections in time, forcefully shutting down"
-    );
-    process.exit(1);
-  }, 5000);
-};
+//     await closeConnection();
+//     process.exit(0);
+//   });
 
-process.on("SIGTERM", shutDown);
-process.on("SIGINT", shutDown);
+//   setTimeout(() => {
+//     logger.error(
+//       "Could not close connections in time, forcefully shutting down"
+//     );
+//     process.exit(1);
+//   }, 5000);
+// };
+
+// process.on("SIGTERM", shutDown);
+// process.on("SIGINT", shutDown);

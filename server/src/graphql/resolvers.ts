@@ -4,6 +4,7 @@ import { UserInputError } from "apollo-server-express";
 import { Resolvers } from "./types";
 import * as DB from "../db";
 import auth from "../utils/auth";
+import { todoSubscription, publishTodoEvent } from "../utils/pubsub";
 
 const resolvers: Partial<Resolvers> = {
   DateTime: new GraphQLScalarType({
@@ -35,12 +36,33 @@ const resolvers: Partial<Resolvers> = {
       });
       return user.uid;
     },
-    createTodo: (_, { input }, context) =>
-      DB.createOne({ target: DB.Todo, item: input, context }),
-    updateTodo: (_, { id, input }, context) =>
-      DB.updateOne({ target: DB.Todo, id, updatedItem: input, context }),
+    createTodo: async (_, { input }, context) => {
+      const newTodo = await DB.createOne({
+        target: DB.Todo,
+        item: input,
+        context,
+      });
+      publishTodoEvent(newTodo);
+      return newTodo;
+    },
+    updateTodo: async (_, { id, input }, context) => {
+      const updatedTodo = await DB.updateOne({
+        target: DB.Todo,
+        id,
+        updatedItem: input,
+        context,
+      });
+      publishTodoEvent(updatedTodo);
+
+      return updatedTodo;
+    },
     deleteTodo: (_, { id }, context) =>
       DB.deleteOne({ target: DB.Todo, id, context }),
+  },
+  Subscription: {
+    onUpdateTodo: {
+      subscribe: todoSubscription,
+    },
   },
 };
 

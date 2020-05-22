@@ -68,6 +68,10 @@ const schema = gql`
     updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
     deleteTodo(id: ID!): Boolean!
   }
+
+  type Subscription {
+    onUpdateTodo: Todo!
+  }
 `;
 
 export default schema;

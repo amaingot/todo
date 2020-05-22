@@ -11,6 +11,7 @@
     "start:in-container": "NODE_ENV=production yarn start:server"
   },
   "dependencies": {
+    "@axelspringer/graphql-google-pubsub": "^2.1.0",
     "@google-cloud/logging-winston": "^3.0.6",
     "@google-cloud/pubsub": "^2.0.0",
     "@google-cloud/secret-manager": "^2.1.0",
