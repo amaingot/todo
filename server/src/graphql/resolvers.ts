@@ -3,6 +3,7 @@ import { UserInputError } from "apollo-server-express";
 
 import { Resolvers } from "./types";
 import * as DB from "../db";
+import auth from "../utils/auth";
 
 const resolvers: Partial<Resolvers> = {
   DateTime: new GraphQLScalarType({
@@ -26,6 +27,14 @@ const resolvers: Partial<Resolvers> = {
       DB.findMany({ target: DB.Todo, input, context }),
   },
   Mutation: {
+    signUp: async (_, { input }) => {
+      const user = await auth.createUser({
+        email: input.email,
+        password: input.password,
+        emailVerified: true,
+      });
+      return user.uid;
+    },
     createTodo: (_, { input }, context) =>
       DB.createOne({ target: DB.Todo, item: input, context }),
     updateTodo: (_, { id, input }, context) =>

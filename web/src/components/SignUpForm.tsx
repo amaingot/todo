@@ -2,8 +2,11 @@ import React from "react";
 import { Button, Grid, Paper, TextField, Typography } from "@material-ui/core";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import firebase from "firebase/app";
+import { useSignUpMutation } from "../graphql/hooks";
 
-const LoginForm: React.FC = () => {
+const SignUpForm: React.FC = () => {
+  const [signUpMutation] = useSignUpMutation();
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string>();
@@ -12,6 +15,14 @@ const LoginForm: React.FC = () => {
   const login = async () => {
     setLoading(true);
     try {
+      await signUpMutation({
+        variables: {
+          input: {
+            email,
+            password,
+          },
+        },
+      });
       await firebase.auth().signInWithEmailAndPassword(email, password);
       setLoading(false);
     } catch (e) {
@@ -22,7 +33,7 @@ const LoginForm: React.FC = () => {
   return (
     <Paper style={{ margin: 16, padding: 16 }}>
       <Typography variant="h3" gutterBottom>
-        Login
+        Sign Up
       </Typography>
       <form>
         <Grid container>
@@ -53,7 +64,7 @@ const LoginForm: React.FC = () => {
               onClick={login}
               disabled={loading}
             >
-              <ArrowForwardIcon /> Add
+              <ArrowForwardIcon />
             </Button>
           </Grid>
           {error && (
@@ -67,4 +78,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

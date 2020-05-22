@@ -57,7 +57,13 @@ const schema = gql`
     done: Boolean!
   }
 
+  input SignUpInput {
+    email: String!
+    password: String!
+  }
+
   type Mutation {
+    signUp(input: SignUpInput!): String!
     createTodo(input: CreateTodoInput!): Todo!
     updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
     deleteTodo(id: ID!): Boolean!

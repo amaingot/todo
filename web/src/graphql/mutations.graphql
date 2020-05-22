@@ -1,3 +1,7 @@
+mutation SignUp($input: SignUpInput!) {
+  signUp(input: $input)
+}
+
 mutation CreateTodo($input: CreateTodoInput!) {
   createTodo(input: $input) {
     id

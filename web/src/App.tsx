@@ -4,6 +4,7 @@ import CreateTodo from "./components/CreateTodo";
 import TodoList from "./components/TodoList";
 import LoginForm from "./components/LoginForm";
 import { useAuth } from "./contexts/AuthContext";
+import SignUpForm from "./components/SignUpForm";
 
 const App: React.FC = () => {
   const { loggedIn } = useAuth();
@@ -15,7 +16,10 @@ const App: React.FC = () => {
           <TodoList />
         </>
       ) : (
-        <LoginForm />
+        <>
+          <LoginForm />
+          <SignUpForm />
+        </>
       )}
     </Layout>
   );

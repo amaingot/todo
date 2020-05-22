@@ -11,6 +11,8 @@
     "start:in-container": "NODE_ENV=production yarn start:server"
   },
   "dependencies": {
+    "@google-cloud/logging-winston": "^3.0.6",
+    "@google-cloud/pubsub": "^2.0.0",
     "@google-cloud/secret-manager": "^2.1.0",
     "apollo-server-express": "^2.11.0",
     "convict": "^6.0.0",
