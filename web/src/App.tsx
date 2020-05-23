@@ -1,4 +1,6 @@
 import React from "react";
+import { CircularProgress } from "@material-ui/core";
+
 import Layout from "./components/Layout";
 import CreateTodo from "./components/CreateTodo";
 import TodoList from "./components/TodoList";
@@ -7,18 +9,27 @@ import { useAuth } from "./contexts/AuthContext";
 import SignUpForm from "./components/SignUpForm";
 
 const App: React.FC = () => {
-  const { loggedIn } = useAuth();
+  const { loggedIn, loading } = useAuth();
   return (
     <Layout>
-      {loggedIn ? (
-        <>
-          <CreateTodo />
-          <TodoList />
-        </>
+      {loading ? (
+        <CircularProgress
+          size={64}
+          style={{ margin: "4rem auto", display: "block" }}
+        />
       ) : (
         <>
-          <LoginForm />
-          <SignUpForm />
+          {loggedIn ? (
+            <>
+              <CreateTodo />
+              <TodoList />
+            </>
+          ) : (
+            <>
+              <LoginForm />
+              <SignUpForm />
+            </>
+          )}
         </>
       )}
     </Layout>

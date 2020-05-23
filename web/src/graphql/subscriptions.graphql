@@ -1,0 +1,12 @@
+subscription onTodoEvent {
+  onTodoEvent {
+    # todo {
+    #   id
+    #   description
+    #   done
+    #   createdAt
+    #   updatedAt
+    # }
+    id
+  }
+}
