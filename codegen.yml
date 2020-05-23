@@ -29,4 +29,3 @@ generates:
       withHooks: true
       withComponent: false
       withHOC: false
-      gqlImport: apollo-boost#gql
