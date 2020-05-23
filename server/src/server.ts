@@ -9,6 +9,7 @@ import resolvers from "./graphql/resolvers";
 import { GraphqlContext } from "./graphql/context";
 import { appLogger, appErrorLogger } from "./utils/logger";
 import renderHtml from "./utils/renderHtml";
+import { initPubSub } from "./utils/pubsub";
 
 const PORT = 8080;
 
@@ -27,9 +28,22 @@ const server = new ApolloServer({
   },
   tracing: true,
   context: async (expressContext): Promise<GraphqlContext> => {
-    const context = new GraphqlContext(expressContext);
+    const context = new GraphqlContext({ expressContext });
     await context.parseToken();
     return context;
+  },
+  subscriptions: {
+    onConnect: async (connectionParams: { authToken?: string }, webSocket) => {
+      if (connectionParams.authToken) {
+        const context = new GraphqlContext({
+          authToken: connectionParams.authToken,
+          webSocket,
+        });
+        await context.parseToken();
+        return context;
+      }
+      throw new Error("Missing auth token!");
+    },
   },
 });
 
@@ -41,6 +55,7 @@ app.use(appErrorLogger());
 renderHtml(app);
 
 openConnection();
+initPubSub();
 
 app.get("/_health/ready", async (_req, res) => {
   const isReady = getConnection().isConnected;

@@ -2,7 +2,7 @@
 
 interface Window extends Window {
   App: {
-    COOKIE_KEY: string;
+    FIREBASE_CONFIG: string;
     TENANT_ID: string;
   };
 }

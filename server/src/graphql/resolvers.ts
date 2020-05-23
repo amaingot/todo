@@ -6,7 +6,7 @@ import * as DB from "../db";
 import auth from "../utils/auth";
 import { todoSubscription, publishTodoEvent } from "../utils/pubsub";
 
-const resolvers: Partial<Resolvers> = {
+const resolvers: Resolvers = {
   DateTime: new GraphQLScalarType({
     name: "DateTime",
     description: "Date time represented as an ISO String",
@@ -21,6 +21,9 @@ const resolvers: Partial<Resolvers> = {
       return value.toISOString();
     },
   }),
+  TodoEvent: {
+    todo: ({ id }, _, context) => DB.findOne({ target: DB.Todo, id, context }),
+  },
   Query: {
     getTodo: (_, { id }, context) =>
       DB.findOne({ target: DB.Todo, id, context }),
@@ -42,7 +45,7 @@ const resolvers: Partial<Resolvers> = {
         item: input,
         context,
       });
-      publishTodoEvent(newTodo);
+      publishTodoEvent(newTodo.id);
       return newTodo;
     },
     updateTodo: async (_, { id, input }, context) => {
@@ -52,7 +55,7 @@ const resolvers: Partial<Resolvers> = {
         updatedItem: input,
         context,
       });
-      publishTodoEvent(updatedTodo);
+      publishTodoEvent(updatedTodo.id);
 
       return updatedTodo;
     },
@@ -60,8 +63,8 @@ const resolvers: Partial<Resolvers> = {
       DB.deleteOne({ target: DB.Todo, id, context }),
   },
   Subscription: {
-    onUpdateTodo: {
-      subscribe: todoSubscription,
+    onTodoEvent: {
+      subscribe: todoSubscription as any,
     },
   },
 };

@@ -9,6 +9,12 @@ const configurationSchema = {
     env: "ENVIRONMENT",
     format: ["prod", "staging", "local"],
   },
+  FIREBASE_APP_CONFIG: {
+    default: "",
+    doc: "Config for the Firebase App",
+    env: "FIREBASE_APP_CONFIG",
+    format: String
+  },
   GCP_PROJECT_ID: {
     default: "hmm-dev",
     doc: "GCP Project ID for where this will run",

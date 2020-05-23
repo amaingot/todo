@@ -14,9 +14,11 @@ const renderHtml = (app: Application) => {
   const rawHtml = fs.readFileSync(`${assetPath}/index.html`, "utf8");
 
   const TENANT_ID = config.get("GCP_IDP_TENANT_ID");
+  const FIREBASE_CONFIG = config.get("FIREBASE_APP_CONFIG");
 
   const html = Mustache.render(rawHtml, {
     TENANT_ID,
+    FIREBASE_CONFIG,
   });
 
   app.use(express.static(assetPath));

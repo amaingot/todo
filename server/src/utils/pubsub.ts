@@ -1,15 +1,42 @@
-import { GooglePubSub } from "@axelspringer/graphql-google-pubsub";
+import { GooglePubSub as GqlPubSub } from "@axelspringer/graphql-google-pubsub";
+import { PubSub as GooglePubSub } from "@google-cloud/pubsub";
 import config from "./config";
-import { Todo } from "../db";
+import { logger } from "./logger";
 
-const pubSub = new GooglePubSub({
+const graphqlPubSub = new GqlPubSub({
+  projectId: config.get("GCP_PROJECT_ID"),
+  credentials: JSON.parse(config.get("GCP_SERVICE_ACCOUNT_KEY")),
+});
+
+const googlePubSub = new GooglePubSub({
   projectId: config.get("GCP_PROJECT_ID"),
   credentials: JSON.parse(config.get("GCP_SERVICE_ACCOUNT_KEY")),
 });
 
 const TODO_TOPIC_NAME = `todo-app-${config.get("ENVIRONMENT")}`;
 
-export const todoSubscription = () => pubSub.asyncIterator(TODO_TOPIC_NAME);
+export const initPubSub = async () => {
+  const [topics] = await googlePubSub.getTopics();
 
-export const publishTodoEvent = (todo: Todo) =>
-  pubSub.publish(TODO_TOPIC_NAME, todo);
+  try {
+    if (topics.filter((t) => t.name === TODO_TOPIC_NAME).length > 0) {
+      logger.info("Topic initialized");
+      return true;
+    } else {
+      await googlePubSub.createTopic(TODO_TOPIC_NAME);
+      logger.info("Created topic");
+      return true;
+    }
+  } catch (e) {
+    logger.error("Error initializing pubsub topic", {
+      topic: TODO_TOPIC_NAME,
+      error: e,
+    });
+  }
+};
+
+export const todoSubscription = () =>
+  graphqlPubSub.asyncIterator(TODO_TOPIC_NAME);
+
+export const publishTodoEvent = (id: string) =>
+  graphqlPubSub.publish(TODO_TOPIC_NAME, { id });

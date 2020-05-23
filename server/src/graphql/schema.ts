@@ -69,8 +69,13 @@ const schema = gql`
     deleteTodo(id: ID!): Boolean!
   }
 
+  type TodoEvent {
+    id: ID!
+    todo: Todo
+  }
+
   type Subscription {
-    onUpdateTodo: Todo!
+    onTodoEvent: TodoEvent!
   }
 `;
 
