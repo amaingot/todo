@@ -17,10 +17,7 @@ generates:
       contextType: ./context#GraphqlContext
       noSchemaStitching: true
       mappers:
-        Client: "../db#Client as ClientModel"
-        Job: "../db#Job as JobModel"
-        Employee: "../db#Employee as EmployeeModel"
-        Customer: "../db#Customer as CustomerModel"
+        Todo: "../db#Todo as TodoModel"
 
   web/src/graphql/hooks.tsx:
     documents: web/src/graphql/*.graphql
