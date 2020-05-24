@@ -10,3 +10,4 @@ This is a super simple app that I use for demonstration purposes.
 - **Kubernetes**: Lots of kubernetes resources defined inside the `k8/` file
 - **Model Level Permissions**: Look at the `Todo` typeorm entity, you'll find some interesting ways we do auth
 - **Database Helpers**: This helps me do very simple resolvers. See `server/src/db/helpers.ts`, and the resovlers
+- **Tag-based Deploys**: When I want to deploy to production, I simple create a release through Github in semvar fashion and CircleCI picks it up for me and deploys!
