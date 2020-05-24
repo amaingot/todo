@@ -27,7 +27,7 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
-const websocketHost = `ws://${window.location.host}/graphql`;
+const websocketHost = `wss://${window.location.host}/graphql`;
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
