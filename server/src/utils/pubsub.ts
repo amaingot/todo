@@ -35,8 +35,12 @@ export const initPubSub = async () => {
   }
 };
 
+interface OnTodoMessage {
+  id: string;
+}
+
 export const todoSubscription = () =>
-  graphqlPubSub.asyncIterator(TODO_TOPIC_NAME);
+  graphqlPubSub.asyncIterator<OnTodoMessage>(TODO_TOPIC_NAME);
 
 export const publishTodoEvent = (id: string) =>
   graphqlPubSub.publish(TODO_TOPIC_NAME, { id });

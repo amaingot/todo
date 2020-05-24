@@ -41,6 +41,9 @@ lerna-debug.log*
 # Kubectl
 *.unsealed.yml
 
+# VS Code
+.vscode
+
 # Generated Files
 server/src/graphql/types.ts
 web/src/graphql/hooks.tsx

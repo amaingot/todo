@@ -5,6 +5,7 @@ import { Resolvers } from "./types";
 import * as DB from "../db";
 import auth from "../utils/auth";
 import { todoSubscription, publishTodoEvent } from "../utils/pubsub";
+import { Message } from "@google-cloud/pubsub";
 
 const resolvers: Resolvers = {
   DateTime: new GraphQLScalarType({
@@ -59,12 +60,16 @@ const resolvers: Resolvers = {
 
       return updatedTodo;
     },
-    deleteTodo: (_, { id }, context) =>
-      DB.deleteOne({ target: DB.Todo, id, context }),
+    deleteTodo: (_, { id }, context) => {
+      publishTodoEvent(id);
+
+      return DB.deleteOne({ target: DB.Todo, id, context });
+    },
   },
   Subscription: {
     onTodoEvent: {
-      subscribe: todoSubscription as any,
+      resolve: (payload: Message) => JSON.parse(payload.data.toString()),
+      subscribe: () => todoSubscription(),
     },
   },
 };

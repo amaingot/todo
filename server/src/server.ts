@@ -7,7 +7,7 @@ import { openConnection } from "./db";
 import schema from "./graphql/schema";
 import resolvers from "./graphql/resolvers";
 import { GraphqlContext } from "./graphql/context";
-import { appLogger, appErrorLogger } from "./utils/logger";
+import { appLogger, appErrorLogger, logger } from "./utils/logger";
 import renderHtml from "./utils/renderHtml";
 import { initPubSub } from "./utils/pubsub";
 
@@ -28,12 +28,19 @@ const server = new ApolloServer({
   },
   tracing: true,
   context: async (expressContext): Promise<GraphqlContext> => {
+    const { connection } = expressContext;
+    if (connection?.context) {
+      return connection.context;
+    }
     const context = new GraphqlContext({ expressContext });
     await context.parseToken();
     return context;
   },
   subscriptions: {
-    onConnect: async (connectionParams: { authToken?: string }, webSocket) => {
+    onConnect: async (
+      connectionParams: { authToken?: string },
+      webSocket
+    ): Promise<GraphqlContext> => {
       if (connectionParams.authToken) {
         const context = new GraphqlContext({
           authToken: connectionParams.authToken,
@@ -81,37 +88,10 @@ const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
 httpServer.listen(PORT, () => {
-  console.log(
+  logger.info(
     `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
   );
-  console.log(
+  logger.info(
     `🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`
   );
 });
-
-// const expressServer = app.listen(config.port, config.host, (e) => {
-//   if (e) {
-//     throw new Error("Internal Server Error");
-//   }
-//   logger.info(`${config.name} running on ${config.host}:${config.port}`);
-// });
-
-// const shutDown = () => {
-//   logger.info("Received kill signal, shutting down gracefully");
-//   expressServer.close(async () => {
-//     logger.info("Closed out remaining connections");
-
-//     await closeConnection();
-//     process.exit(0);
-//   });
-
-//   setTimeout(() => {
-//     logger.error(
-//       "Could not close connections in time, forcefully shutting down"
-//     );
-//     process.exit(1);
-//   }, 5000);
-// };
-
-// process.on("SIGTERM", shutDown);
-// process.on("SIGINT", shutDown);

@@ -1,11 +1,11 @@
 import expressWinston from "express-winston";
+import { LoggingWinston } from "@google-cloud/logging-winston";
 import winston from "winston";
 import config from "./config";
 
 const transports: any[] = [];
 
 if (config.get("NODE_ENV") === "production") {
-  const { LoggingWinston } = require("@google-cloud/logging-winston");
   const loggingWinston = new LoggingWinston({
     level: "info",
     credentials: JSON.parse(config.get("GCP_SERVICE_ACCOUNT_KEY")),
