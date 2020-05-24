@@ -18,9 +18,8 @@ const renderHtml = (app: Application) => {
 
     const html = Mustache.render(rawHtml, {
       TENANT_ID: config.get("GCP_IDP_TENANT_ID"),
-      FIREBASE_CONFIG: config.get("FIREBASE_APP_CONFIG"),
+      FIREBASE_CONFIG: config.get("FIREBASE_APP_CONFIG").split('"').join('\\"'),
     });
-    console.log({ html });
 
     res.status(200).send(html);
   });
