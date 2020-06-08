@@ -17,7 +17,7 @@ data:
   POSTGRES_DATABASE: "todo_staging"
   POSTGRES_USERNAME: "todo_staging_user"
   GCP_IDP_TENANT_ID: "todo-staging-g7vip"
-  POSTGRES_HOST: "172.29.65.3"
+  POSTGRES_HOST: "172.29.64.5"
 
 ---
 apiVersion: networking.k8s.io/v1beta1
