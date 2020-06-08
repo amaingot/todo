@@ -78,7 +78,6 @@ const configurationSchema = {
     env: "POSTGRES_USERNAME",
     format: String,
   },
-
   SHA: {
     default: "no-sha-provided",
     doc: "Specifies the sha of the current version of the application",

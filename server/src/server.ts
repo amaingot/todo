@@ -55,7 +55,6 @@ const server = new ApolloServer({
 });
 
 server.applyMiddleware({ app });
-server.installSubscriptionHandlers;
 
 app.use(appErrorLogger());
 

@@ -16,12 +16,6 @@ jobs:
           name: Installing dependencies
           command: yarn
 
-      # - run:
-      #     name: Run tests for the user interface
-      #     command: yarn --cwd=web test --ci --runInBand --reporters=default --reporters=jest-junit
-      #     environment:
-      #       JEST_JUNIT_OUTPUT_DIR: ../test-results/web-test-results.xml
-
       - run:
           name: Build user interface
           command: |
@@ -119,7 +113,6 @@ jobs:
           command: |
             kubectl apply -f k8/configs/staging.yml
             kubectl apply -f k8/secrets/staging.yml
-            kubectl apply -f k8/ingress/staging.yml
 
       - run:
           name: Deploy App
@@ -127,7 +120,7 @@ jobs:
             cd k8
             sed -i "s/\${parameters.tag}/${CIRCLE_SHA1}/g" deployment.yml
             sed -i "s/\${parameters.namespace}/staging/g" deployment.yml
-            kubectl apply -f deployment.yml --namespace="staging"
+            kubectl apply -f deployment.yml --namespace="todo-staging"
 
   deploy-prod:
     working_directory: ~/todo
@@ -155,9 +148,9 @@ jobs:
       - run:
           name: Add prod tag to images
           command: |
-            gcloud container images add-tag \
-              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
-              gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_TAG} --quiet
+            # gcloud container images add-tag \
+            #   gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
+            #   gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_TAG} --quiet
             gcloud container images add-tag \
               gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1} \
               gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:latest --quiet
@@ -167,7 +160,6 @@ jobs:
           command: |
             kubectl apply -f k8/configs/prod.yml
             kubectl apply -f k8/secrets/prod.yml
-            kubectl apply -f k8/ingress/prod.yml
 
       - run:
           name: Deploy App to Prod
@@ -175,7 +167,7 @@ jobs:
             cd k8
             sed -i "s/\${parameters.tag}/${CIRCLE_SHA1}/g" deployment.yml
             sed -i "s/\${parameters.namespace}/prod/g" deployment.yml
-            kubectl apply -f deployment.yml --namespace="prod"
+            kubectl apply -f deployment.yml --namespace="todo-prod"
 
 workflows:
   version: 2
@@ -199,7 +191,7 @@ workflows:
             tags:
               ignore: /.*/
 
-      - deploy-staging:
+      - deploy-prod:
           context: maingot
           requires:
             - build-backend
@@ -208,11 +200,10 @@ workflows:
               only: master
             tags:
               ignore: /.*/
-
-      - deploy-prod:
-          context: maingot
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
+      # - deploy-prod:
+      #     context: maingot
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
